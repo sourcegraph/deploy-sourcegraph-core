@@ -1,4 +1,4 @@
-# deploy-sourcegraph-dhall
+# deploy-sourcegraph-core
 
 ## Commits
 
