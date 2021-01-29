@@ -1,0 +1,51 @@
+let Kubernetes/Container =
+      ../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
+
+let Kubernetes/EnvVar =
+      ../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
+let ContainerResources = ../container-resources/package.dhall
+
+let sharedUtil = ../../../util/package.dhall
+
+let Input =
+      { Type =
+          { name : Text
+          , resources : ContainerResources.Requirements.Type
+          , environment : Optional (List Kubernetes/EnvVar.Type)
+          , image : sharedUtil.Image.Type
+          }
+      , default =
+        { resources = ContainerResources.Requirements::{=}
+        , environment = None (List Kubernetes/EnvVar.Type)
+        }
+      }
+
+let Build
+    : Input.Type → Kubernetes/Container.Type
+    = λ(i : Input.Type) →
+        let name = i.name
+
+        let resources = ContainerResources.toK8s i.resources
+
+        let env = i.environment
+
+        let image = Some (sharedUtil.Image/show i.image)
+
+        in  Kubernetes/Container::{ name, resources, env, image }
+
+let testImage =
+      sharedUtil.Image::{
+      , name = "someDocker/images"
+      , registry = Some "index.docker.io"
+      , digest = Some "abc123DEADBEEF"
+      , tag = "some-tag"
+      }
+
+let testName = "some image "
+
+let testInput = Input::{ name = testName, image = testImage }
+
+let test0 = assert : Build
+
+in  { Input, Build }

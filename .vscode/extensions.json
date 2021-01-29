@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "jakob101.relativepath",
+    "yzhang.markdown-all-in-one",
+    "takumii.markdowntable",
+    "ms-vsliveshare.vsliveshare",
+    "dhall.dhall-lang",
+    "dhall.vscode-dhall-lsp-server",
+    "esbenp.prettier-vscode",
+    "skellock.just",
+  ],
+}

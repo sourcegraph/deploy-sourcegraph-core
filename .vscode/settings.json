@@ -1,0 +1,16 @@
+{
+  "path-autocomplete.pathMappings": {
+    "/k8s": "${folder}/src/deps/k8s/schemas",
+  },
+
+  "path-autocomplete.transformations": [
+    {
+      "type": "replace",
+      "parameters": ["^/k8s", "${folder}/src/deps/k8s/schemas"],
+      "when": {
+        "fileName": "\\.dhall$",
+      },
+    },
+  ],
+  "path-autocomplete.ignoredPrefixes": [],
+}

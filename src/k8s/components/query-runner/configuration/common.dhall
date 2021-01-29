@@ -1,0 +1,1 @@
+let common = {} in common
