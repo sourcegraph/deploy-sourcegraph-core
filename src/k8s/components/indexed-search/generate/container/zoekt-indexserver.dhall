@@ -42,8 +42,7 @@ let Container/zoekt-indexserver/generate
             , env = c.envVars
             , image = Some image
             , name = "zoekt-indexserver"
-            , ports = Some
-              [ httpPort]
+            , ports = Some [ httpPort ]
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
             , securityContext

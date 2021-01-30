@@ -102,7 +102,11 @@ let StatefulSet/generate
               Kubernetes/StatefulSet::{
               , metadata = Kubernetes/ObjectMeta::{
                 , annotations = Some
-                    (toMap { description = "Backend for indexed text search operations." })
+                    ( toMap
+                        { description =
+                            "Backend for indexed text search operations."
+                        }
+                    )
                 , labels = Some labels
                 , name = Some "indexed-search"
                 , namespace

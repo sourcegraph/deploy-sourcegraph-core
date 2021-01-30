@@ -36,8 +36,6 @@ let Container/zoekt-webserver/generate
 
         let probe = k8sProbe with failureThreshold = None Natural
 
-        let livenessProbe = probe with periodSeconds = None Natural
-
         let readinessProbe
             : Kubernetes/Probe.Type
             = probe
@@ -55,8 +53,7 @@ let Container/zoekt-webserver/generate
             , env = c.envVars
             , image = Some image
             , name = "zoekt-webserver"
-            , ports = Some
-              [ httpPort]
+            , ports = Some [ httpPort ]
             , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
