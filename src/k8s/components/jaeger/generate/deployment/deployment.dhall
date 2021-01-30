@@ -1,6 +1,27 @@
 let Kubernetes/Deployment =
       ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.Deployment.dhall
 
+let Kubernetes/ObjectMeta =
+      ../../../../../deps/k8s/schemas/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta.dhall
+
+let Kubernetes/DeploymentSpec =
+      ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.DeploymentSpec.dhall
+
+let Kubernetes/LabelSelector =
+      ../../../../../deps/k8s/schemas/io.k8s.apimachinery.pkg.apis.meta.v1.LabelSelector.dhall
+
+let Kubernetes/DeploymentStrategy =
+      ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.DeploymentStrategy.dhall
+
+let Kubernetes/PodTemplateSpec =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodTemplateSpec.dhall
+
+let Kubernetes/PodSpec =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSpec.dhall
+
+let Kubernetes/PodSecurityContext =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSecurityContext.dhall
+
 let Simple = ../../../../../simple/jaeger/package.dhall
 
 let Configuration/Internal/Deployment =
@@ -19,7 +40,7 @@ let Deployment/generate
 
         let deployment =
               Kubernetes/Deployment::{
-              , metadata = schemas.ObjectMeta::{
+              , metadata = Kubernetes/ObjectMeta::{
                 , labels = Some
                   [ { mapKey = "app", mapValue = name }
                   , { mapKey = "app.kubernetes.io/component", mapValue = name }
@@ -32,9 +53,9 @@ let Deployment/generate
                 , name = Some name
                 , namespace
                 }
-              , spec = Some schemas.DeploymentSpec::{
+              , spec = Some Kubernetes/DeploymentSpec::{
                 , replicas = Some 1
-                , selector = schemas.LabelSelector::{
+                , selector = Kubernetes/LabelSelector::{
                   , matchLabels = Some
                     [ { mapKey = "app", mapValue = name }
                     , { mapKey = "app.kubernetes.io/component"
@@ -43,11 +64,11 @@ let Deployment/generate
                     , { mapKey = "app.kubernetes.io/name", mapValue = name }
                     ]
                   }
-                , strategy = Some schemas.DeploymentStrategy::{
+                , strategy = Some Kubernetes/DeploymentStrategy::{
                   , type = Some "Recreate"
                   }
-                , template = schemas.PodTemplateSpec::{
-                  , metadata = schemas.ObjectMeta::{
+                , template = Kubernetes/PodTemplateSpec::{
+                  , metadata = Kubernetes/ObjectMeta::{
                     , annotations = Some
                       [ { mapKey = "prometheus.io/port", mapValue = "16686" }
                       , { mapKey = "prometheus.io/scrape", mapValue = "true" }
@@ -61,10 +82,11 @@ let Deployment/generate
                       , { mapKey = "deploy", mapValue = "sourcegraph" }
                       ]
                     }
-                  , spec = Some schemas.PodSpec::{
+                  , spec = Some Kubernetes/PodSpec::{
                     , containers =
-                        [ Container/jaeger/generate c.Containers ] # c.sideCars
-                    , securityContext = Some schemas.PodSecurityContext::{
+                          [ Container/jaeger/generate c.Containers.jaeger ]
+                        # c.sideCars
+                    , securityContext = Some Kubernetes/PodSecurityContext::{
                       , runAsUser = Some 0
                       }
                     }

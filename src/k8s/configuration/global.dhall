@@ -23,6 +23,8 @@ let Searcher/configuration = ../components/searcher/configuration/user.dhall
 
 let Minio/configuration = ../components/minio/configuration/user.dhall
 
+let Jaeger/configuration = ../components/jaeger/configuration/user.dhall
+
 let Image/manipulate/options =
       (../../util/functions/image-manipulate.dhall).Image/manipulate/options
 
@@ -45,6 +47,7 @@ let configuration =
           , searcher : Searcher/configuration.Type
           , pgsql : Postgres/configuration.Type
           , minio : Minio/configuration.Type
+          , jaeger : Jaeger/configuration.Type
           }
       , default =
         { Global =
@@ -64,6 +67,7 @@ let configuration =
         , searcher = Searcher/configuration.default
         , pgsql = Postgres/configuration.default
         , minio = Minio/configuration.default
+        , jaeger = Jaeger/configuration.default
         }
       }
 
