@@ -18,6 +18,8 @@ let Minio/shape = ./components/minio/shape.dhall
 
 let Searcher/shape = ./components/searcher/shape.dhall
 
+let IndexedSearch/shape = ./components/indexed-search/shape.dhall
+
 in  { gitserver : Gitserver/shape
     , symbols : Symbols/shape
     , repo-updater : RepoUpdater/shape
@@ -28,4 +30,5 @@ in  { gitserver : Gitserver/shape
     , cadvisor : CAdvisor/shape
     , minio : Minio/shape
     , searcher : Searcher/shape
+    , indexed-search : IndexedSearch/shape
     }
