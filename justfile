@@ -15,6 +15,10 @@ freeze: freeze-dhall
 
 check: check-dhall
 
+check-pkg: check-package
+
+check-package: check-dhall-package
+
 prettier:
     yarn run prettier
 
@@ -26,6 +30,11 @@ build-docker-compose:
 
 check-dhall:
     ./scripts/dhall-check.sh
+
+k8s-package-file := "./src/k8s/package.dhall"
+
+check-dhall-package:
+    ./scripts/dhall-check.sh '{{k8s-package-file}}'
 
 format-dhall:
     ./scripts/dhall-format.sh
