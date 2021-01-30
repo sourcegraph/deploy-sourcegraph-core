@@ -16,7 +16,7 @@ let jaegerImage =
 let ports =
       { query = 6072
       , collector = 14250
-      , agent = { A = 5578, B = 6831, C = 6832 }
+      , agent = { A = 5778, B = 6831, C = 6832 }
       }
 
 let jaegerContainer =
