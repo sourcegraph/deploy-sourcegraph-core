@@ -2,6 +2,8 @@ let Generate/Deployment = ./generate/deployment/deployment.dhall
 
 let Generate/Service/query = ./generate/service/jaeger-query.dhall
 
+let Generate/Service/collector = ./generate/service/jaeger-collector.dhall
+
 let Configuration/global = ../../configuration/global.dhall
 
 let shape = ./shape.dhall
@@ -15,7 +17,7 @@ let generate
 
         in  { Deployment.jaeger = Generate/Deployment config.Deployment.jaeger
             , Service.jaeger-collector
-              = Generate/Service/query config.Service.jaeger-collector
+              = Generate/Service/collector config.Service.jaeger-collector
             , Service.jaeger-query
               = Generate/Service/query config.Service.jaeger-query
             }

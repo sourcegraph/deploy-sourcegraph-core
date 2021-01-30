@@ -10,8 +10,6 @@ let Kubernetes/Service =
 let Kubernetes/ServiceSpec =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ServiceSpec.dhall
 
-let Simple/Jaeger = ../../../../../simple/jaeger/package.dhall
-
 let Configuration/internal/service = ../../configuration/internal/service.dhall
 
 let Generate
@@ -37,7 +35,7 @@ let Generate
               , ports = Some
                 [ Kubernetes/ServicePort::{
                   , name = Some "jaeger-collector-tchannel"
-                  , port = Simple/Jaeger.Containers.jaeger.ports.collector
+                  , port = 14267
                   , protocol = Some "TCP"
                   , targetPort = Some
                       (< Int : Natural | String : Text >.Int 14267)
