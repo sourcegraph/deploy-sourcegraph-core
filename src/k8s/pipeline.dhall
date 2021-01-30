@@ -1,10 +1,8 @@
 -- dhall-to-yaml --explain --file src/k8s/pipeline.dhall
-let Configuration/global = ./configuration/global.dhall
-
-let generate = ./generate.dhall
+let Sourcegraph = ./package.dhall
 
 let c
-    : Configuration/global.Type
-    = Configuration/global::{=}
+    : Sourcegraph.Configuration.Type
+    = Sourcegraph.Configuration::{=}
 
-in  generate c
+in  Sourcegraph.Generate c

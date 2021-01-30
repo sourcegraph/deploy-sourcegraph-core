@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 cd "$(dirname "${BASH_SOURCE[0]}")"/..
-set -eu pipefail
+set -euo pipefail
 
 DHALL_FILES=()
 
-mapfile -t DHALL_FILES < <(scripts/ls-dhall-files.sh)
+if [ $# -eq 0 ]; then
+  mapfile -t DHALL_FILES < <(scripts/ls-dhall-files.sh)
+else
+  DHALL_FILES=("$@")
+fi
 
 # https://unix.stackexchange.com/a/256201
 function my_chronic() {
