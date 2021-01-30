@@ -30,6 +30,10 @@ let Generate
 
         let resources = c.resources
 
+        let environment = c.envVars
+
+        let volumeMounts = c.volumeMounts
+
         let ports =
               [ Kubernetes/ContainerPort::{
                 , containerPort = 5775
@@ -60,6 +64,7 @@ let Generate
         in  Kubernetes/Container::{
             , args = Some [ "--memory.max-traces=20000" ]
             , image = Some image
+            , env = environment
             , name
             , ports = Some ports
             , readinessProbe = Some Kubernetes/Probe::{
@@ -71,6 +76,7 @@ let Generate
               }
             , resources
             , securityContext
+            , volumeMounts
             }
 
 in  Generate
