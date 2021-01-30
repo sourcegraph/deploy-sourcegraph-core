@@ -54,15 +54,9 @@ let Container/zoekt-webserver/generate
         in  Kubernetes/Container::{
             , env = c.envVars
             , image = Some image
-            , livenessProbe = Some livenessProbe
-            , name = "symbols"
+            , name = "zoekt-webserver"
             , ports = Some
-              [ httpPort
-              , Kubernetes/ContainerPort::{
-                , containerPort = 6060
-                , name = Some "debug"
-                }
-              ]
+              [ httpPort]
             , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"

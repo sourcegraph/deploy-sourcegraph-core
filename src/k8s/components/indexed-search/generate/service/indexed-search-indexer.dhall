@@ -27,39 +27,38 @@ let Service/generate
               , metadata = Kubernetes/ObjectMeta::{
                 , namespace
                 , annotations = Some
-                  [ { mapKey = "prometheus.io/port", mapValue = "6060" }
+                  [ { mapKey = "description"
+                    , mapValue =
+                        "Headless service that provides a stable network identity for the indexed-search stateful set."
+                    }
+                  , { mapKey = "prometheus.io/port", mapValue = "6072" }
                   , { mapKey = "sourcegraph.prometheus/scrape"
                     , mapValue = "true"
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "app", mapValue = "symbols" }
+                  [ { mapKey = "app", mapValue = "indexed-search-indexer" }
                   , { mapKey = "app.kubernetes.io/component"
-                    , mapValue = "symbols"
+                    , mapValue = "indexed-search"
                     }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
                   ]
-                , name = Some "symbols"
+                , name = Some "indexed-search-indexer"
                 }
               , spec = Some Kubernetes/ServiceSpec::{
                 , ports = Some
                   [ Kubernetes/ServicePort::{
-                    , name = Some "http"
-                    , port = 3184
+                    , name = Some "port"
+                    , port = 6072
                     , targetPort = Some
-                        (< Int : Natural | String : Text >.String "http")
-                    }
-                  , Kubernetes/ServicePort::{
-                    , name = Some "debug"
-                    , port = 6060
-                    , targetPort = Some
-                        (< Int : Natural | String : Text >.String "debug")
+                        (< Int : Natural | String : Text >.Int 6072)
                     }
                   ]
-                , selector = Some [ { mapKey = "app", mapValue = "symbols" } ]
+                , selector = Some
+                  [ { mapKey = "app", mapValue = "indexed-search" } ]
                 , type = Some "ClusterIP"
                 }
               }

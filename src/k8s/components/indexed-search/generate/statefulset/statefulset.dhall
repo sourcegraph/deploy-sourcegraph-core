@@ -48,9 +48,9 @@ let PodSpec/generate
     = λ(c : Configuration/Internal/StatefulSet) →
         Kubernetes/PodSpec::{
         , containers =
-              [ Container/zoekt-indexserver/generate
+              [ Container/zoekt-webserver/generate c.Containers.zoekt-webserver
+              , Container/zoekt-indexserver/generate
                   c.Containers.zoekt-indexserver
-              , Container/zoekt-webserver/generate c.Containers.zoekt-webserver
               ]
             # c.sideCars
         , securityContext = Some Kubernetes/PodSecurityContext::{
@@ -102,9 +102,9 @@ let StatefulSet/generate
               Kubernetes/StatefulSet::{
               , metadata = Kubernetes/ObjectMeta::{
                 , annotations = Some
-                    (toMap { description = "Backend for symbols operations." })
+                    (toMap { description = "Backend for indexed text search operations." })
                 , labels = Some labels
-                , name = Some "symbols"
+                , name = Some "indexed-search"
                 , namespace
                 }
               , spec = Some (StatefulSetSpec/generate c)

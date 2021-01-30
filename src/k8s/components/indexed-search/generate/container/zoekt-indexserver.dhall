@@ -33,7 +33,7 @@ let Container/zoekt-indexserver/generate
         let httpPort =
               Kubernetes/ContainerPort::{
               , containerPort = simple/zoekt-indexserver.ports.http
-              , name = Some "http"
+              , name = Some "index-http"
               }
 
         let securityContext = c.securityContext
@@ -41,14 +41,9 @@ let Container/zoekt-indexserver/generate
         in  Kubernetes/Container::{
             , env = c.envVars
             , image = Some image
-            , name = "symbols"
+            , name = "zoekt-indexserver"
             , ports = Some
-              [ httpPort
-              , Kubernetes/ContainerPort::{
-                , containerPort = 6060
-                , name = Some "debug"
-                }
-              ]
+              [ httpPort]
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
             , securityContext

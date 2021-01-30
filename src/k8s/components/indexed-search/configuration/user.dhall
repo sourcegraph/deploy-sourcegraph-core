@@ -30,18 +30,18 @@ let ContainerConfiguration =
 let zoekt-indexserverResources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
-      with limits.cpu = Some "2"
-      with limits.memory = Some "2G"
-      with requests.cpu = Some "500m"
-      with requests.memory = Some "500M"
+      with limits.cpu = Some "8"
+      with limits.memory = Some "8G"
+      with requests.cpu = Some "4"
+      with requests.memory = Some "4G"
 
 let zoekt-webserverResources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
       with limits.cpu = Some "2"
-      with limits.memory = Some "2G"
+      with limits.memory = Some "4G"
       with requests.cpu = Some "500m"
-      with requests.memory = Some "500M"
+      with requests.memory = Some "2G"
 
 let Zoekt-IndexserverContainer =
       { Type =
