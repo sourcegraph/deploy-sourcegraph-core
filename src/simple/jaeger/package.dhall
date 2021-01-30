@@ -4,48 +4,20 @@ let Image = util.Image
 
 let Container = util.Container
 
-
-let jagerImage =
+let jaegerImage =
       Image::{
       , registry = Some "index.docker.io"
-      , name = "sourcegraph/search-indexer"
+      , name = "sourcegraph/jaeger-all-in-one"
       , tag = "insiders"
       , digest = Some
-          "89fa7d5eac6f9f3e8893a482650dffcea4d22be993328427679af7e3ddd08e10"
+          "4d7b14f09400931017aa1ab2565b9a5210613291f74d0fcaabf5446cbb727739"
       }
 
-let indexserverHttpPort = 6072
+let ports = { query = 6072, collector = 14250, agent = [ 5578, 6831, 6832 ] }
 
-let dataDir = "/data"
+let jaegerContainer =
+      Container::{ image = jaegerImage } ∧ { name = "jaeger", ports }
 
-let volumes = { data = dataDir }
-
-let webserverHealthCheck =
-      util.HealthCheck.Network
-        util.NetworkHealthCheck::{
-        , endpoint = "/healthz"
-        , port = webserverHttpPort
-        , scheme = util.HealthCheck/Scheme.HTTP
-        , initialDelaySeconds = Some 5
-        , timeoutSeconds = Some 5
-        }
-
-let webserverContainer =
-        Container::{ image = webserverImage }
-      ∧ { volumes
-        , name = "zoekt-webserver"
-        , ports.http = webserverHttpPort
-        , HealthCheck = webserverHealthCheck
-        }
-
-let indexserverContainer =
-        Container::{ image = indexserverImage }
-      ∧ { volumes
-        , name = "zoekt-indexserver"
-        , ports.http = indexserverHttpPort
-        }
-
-let Containers =
-      { webserver = webserverContainer, indexserver = indexserverContainer }
+let Containers = { jaeger = jaegerContainer }
 
 in  { Containers }
