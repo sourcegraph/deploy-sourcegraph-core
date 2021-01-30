@@ -1,24 +1,22 @@
-let Generate/Deployment = ./generate/deployment/deployment.dhall
-
-let Generate/Service = ./generate/service/service.dhall
+let Generate/Shape = ./generate.dhall
 
 let Configuration/global = ../../configuration/global.dhall
 
 let Kubernetes/Union = ../../union.dhall
 
-let Configuration/toInternal = ./configuration/toInternal.dhall
+let pvsToUnionList = ../../util/persistentvolumes.dhall
 
 let generate-list
     : Configuration/global.Type → List Kubernetes/Union
     = λ(cg : Configuration/global.Type) →
-        let config = Configuration/toInternal cg
+        let shape = Generate/Shape cg
 
-        let deployment = Generate/Deployment config.Deployment.symbols
+        let pvs = pvsToUnionList shape.PersistentVolumes
 
-        let service = Generate/Service config.Service.symbols
-
-        in  [ Kubernetes/Union.Deployment deployment
-            , Kubernetes/Union.Service service
-            ]
+        in    [ Kubernetes/Union.StatefulSet shape.StatefulSet.indexed-search
+              , Kubernetes/Union.Service shape.Service.indexed-search
+              , Kubernetes/Union.Service shape.Service.indexed-search-indexer
+              ]
+            # pvs
 
 in  generate-list

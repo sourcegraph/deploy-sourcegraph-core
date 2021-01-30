@@ -1,6 +1,3 @@
-let Kubernetes/Probe =
-      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Probe.dhall
-
 let Kubernetes/Container =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
@@ -10,41 +7,32 @@ let Kubernetes/ContainerPort =
 let Kubernetes/ResourceRequirements =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ResourceRequirements.dhall
 
-let Simple/Symbols = ../../../../../simple/symbols/package.dhall
+let Simple/IndexedSearch = ../../../../../simple/indexed-search/package.dhall
 
 let util = ../../../../../util/package.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
-let Configuration/Internal/Container/symbols =
-      ../../configuration/internal/container/symbols.dhall
+let Configuration/Internal/Container/zoekt-indexserver =
+      ../../configuration/internal/container/zoekt-indexserver.dhall
 
-let Fixtures/Container/symbols = (./fixtures.dhall).symbols
+let Fixtures/Container/zoekt-indexserver =
+      (./fixtures.dhall).indexed-search.ConfigIndexServer
 
-let Container/symbols/generate
-    : ∀(c : Configuration/Internal/Container/symbols) →
+let Container/zoekt-indexserver/generate
+    : ∀(c : Configuration/Internal/Container/zoekt-indexserver) →
         Kubernetes/Container.Type
-    = λ(c : Configuration/Internal/Container/symbols) →
+    = λ(c : Configuration/Internal/Container/zoekt-indexserver) →
         let image = util.Image/show c.image
 
         let resources = c.resources
 
-        let simple/symbols = Simple/Symbols.Containers.symbols
-
-        let k8sProbe = util.HealthCheck/tok8s simple/symbols.healthCheck
-
-        let probe = k8sProbe with failureThreshold = None Natural
-
-        let livenessProbe = probe with periodSeconds = None Natural
-
-        let readinessProbe
-            : Kubernetes/Probe.Type
-            = probe
-              with initialDelaySeconds = None Natural
+        let simple/zoekt-indexserver =
+              Simple/IndexedSearch.Containers.indexserver
 
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/symbols.ports.http
+              , containerPort = simple/zoekt-indexserver.ports.http
               , name = Some "http"
               }
 
@@ -53,7 +41,6 @@ let Container/symbols/generate
         in  Kubernetes/Container::{
             , env = c.envVars
             , image = Some image
-            , livenessProbe = Some livenessProbe
             , name = "symbols"
             , ports = Some
               [ httpPort
@@ -62,42 +49,36 @@ let Container/symbols/generate
                 , name = Some "debug"
                 }
               ]
-            , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
             , securityContext
             , volumeMounts = c.volumeMounts
             }
 
-let tc = Fixtures/Container/symbols.Config
+let tc = Fixtures/Container/zoekt-indexserver
 
 let Test/image/show =
         assert
-      :   (Container/symbols/generate tc).image
+      :   (Container/zoekt-indexserver/generate tc).image
         ≡ Some Fixtures/global.Image.BaseShow
-
-let Test/environment =
-        assert
-      :   (Container/symbols/generate tc).env
-        ≡ Some Fixtures/Container/symbols.Environment.expected
 
 let Test/resources/some =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-indexserver/generate
               (tc with resources = Fixtures/global.Resources.Expected)
           ).resources
         ≡ Fixtures/global.Resources.Expected
 
 let Test/resources/none =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-indexserver/generate
               (tc with resources = None Kubernetes/ResourceRequirements.Type)
           ).resources
         ≡ Fixtures/global.Resources.EmptyExpected
 
 let Test/securityContext/some =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-indexserver/generate
               ( tc
                 with securityContext = Fixtures/global.SecurityContext.SELinux
               )
@@ -106,9 +87,9 @@ let Test/securityContext/some =
 
 let Test/securityContext/none =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-indexserver/generate
               (tc with securityContext = Fixtures/global.SecurityContext.Empty)
           ).securityContext
         ≡ Fixtures/global.SecurityContext.Empty
 
-in  Container/symbols/generate
+in  Container/zoekt-indexserver/generate

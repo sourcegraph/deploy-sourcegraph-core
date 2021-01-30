@@ -23,7 +23,8 @@ let Searcher/configuration = ../components/searcher/configuration/user.dhall
 
 let Minio/configuration = ../components/minio/configuration/user.dhall
 
-let IndexedSearch/configuration = ../components/indexed-search/configuration/user.dhall
+let IndexedSearch/configuration =
+      ../components/indexed-search/configuration/user.dhall
 
 let Image/manipulate/options =
       (../../util/functions/image-manipulate.dhall).Image/manipulate/options

@@ -10,28 +10,29 @@ let Kubernetes/ContainerPort =
 let Kubernetes/ResourceRequirements =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ResourceRequirements.dhall
 
-let Simple/Symbols = ../../../../../simple/symbols/package.dhall
+let Simple/IndexedSearch = ../../../../../simple/indexed-search/package.dhall
 
 let util = ../../../../../util/package.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
-let Configuration/Internal/Container/symbols =
-      ../../configuration/internal/container/symbols.dhall
+let Configuration/Internal/Container/zoekt-webserver =
+      ../../configuration/internal/container/zoekt-webserver.dhall
 
-let Fixtures/Container/symbols = (./fixtures.dhall).symbols
+let Fixtures/Container/zoekt-webserver =
+      (./fixtures.dhall).indexed-search.ConfigIndexServer
 
-let Container/symbols/generate
-    : ∀(c : Configuration/Internal/Container/symbols) →
+let Container/zoekt-webserver/generate
+    : ∀(c : Configuration/Internal/Container/zoekt-webserver) →
         Kubernetes/Container.Type
-    = λ(c : Configuration/Internal/Container/symbols) →
+    = λ(c : Configuration/Internal/Container/zoekt-webserver) →
         let image = util.Image/show c.image
 
         let resources = c.resources
 
-        let simple/symbols = Simple/Symbols.Containers.symbols
+        let simple/zoekt-webserver = Simple/IndexedSearch.Containers.webserver
 
-        let k8sProbe = util.HealthCheck/tok8s simple/symbols.healthCheck
+        let k8sProbe = util.HealthCheck/tok8s simple/zoekt-webserver.HealthCheck
 
         let probe = k8sProbe with failureThreshold = None Natural
 
@@ -44,7 +45,7 @@ let Container/symbols/generate
 
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/symbols.ports.http
+              , containerPort = simple/zoekt-webserver.ports.http
               , name = Some "http"
               }
 
@@ -69,35 +70,30 @@ let Container/symbols/generate
             , volumeMounts = c.volumeMounts
             }
 
-let tc = Fixtures/Container/symbols.Config
+let tc = Fixtures/Container/zoekt-webserver
 
 let Test/image/show =
         assert
-      :   (Container/symbols/generate tc).image
+      :   (Container/zoekt-webserver/generate tc).image
         ≡ Some Fixtures/global.Image.BaseShow
-
-let Test/environment =
-        assert
-      :   (Container/symbols/generate tc).env
-        ≡ Some Fixtures/Container/symbols.Environment.expected
 
 let Test/resources/some =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-webserver/generate
               (tc with resources = Fixtures/global.Resources.Expected)
           ).resources
         ≡ Fixtures/global.Resources.Expected
 
 let Test/resources/none =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-webserver/generate
               (tc with resources = None Kubernetes/ResourceRequirements.Type)
           ).resources
         ≡ Fixtures/global.Resources.EmptyExpected
 
 let Test/securityContext/some =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-webserver/generate
               ( tc
                 with securityContext = Fixtures/global.SecurityContext.SELinux
               )
@@ -106,9 +102,9 @@ let Test/securityContext/some =
 
 let Test/securityContext/none =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/zoekt-webserver/generate
               (tc with securityContext = Fixtures/global.SecurityContext.Empty)
           ).securityContext
         ≡ Fixtures/global.SecurityContext.Empty
 
-in  Container/symbols/generate
+in  Container/zoekt-webserver/generate

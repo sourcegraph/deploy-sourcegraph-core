@@ -1,30 +1,21 @@
 let Kubernetes/Container =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
-let Fixtures/global = ../../../../util/test-fixtures/package.dhall
-
 let Fixtures/containers = ../container/fixtures.dhall
 
-let Fixtures/jaeger =
-      ../../../shared/jaeger/configuration/internal/jaeger/fixtures.dhall
-
-let Configuration/Internal/Deployment =
-      ../../configuration/internal/deployment.dhall
+let Configuration/Internal/StatefulSet =
+      ../../configuration/internal/statefulset.dhall
 
 let TestConfig
-    : Configuration/Internal/Deployment
+    : Configuration/Internal/StatefulSet
     = { Containers =
-        { symbols = Fixtures/containers.symbols.Config
-        , jaeger = Fixtures/jaeger.Config
+        { zoekt-indexserver =
+            Fixtures/containers.indexed-search.ConfigIndexServer
+        , zoekt-webserver = Fixtures/containers.indexed-search.ConfigWebServer
         }
       , namespace = None Text
       , replicas = 1
-      , volumes.cache-ssd = Fixtures/global.Volumes.NFS
       , sideCars = [] : List Kubernetes/Container.Type
       }
 
-in  { symbols =
-      { Config = TestConfig
-      , Volumes.expected = [ Fixtures/global.Volumes.NFS ]
-      }
-    }
+in  { indexed-search.Config = TestConfig }

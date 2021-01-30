@@ -77,9 +77,13 @@ let Zoekt-WebserverContainer =
 
 let Containers =
       { Type =
-          { zoekt-indexserver : Zoekt-IndexserverContainer.Type, zoekt-webserver : Zoekt-WebserverContainer.Type }
+          { zoekt-indexserver : Zoekt-IndexserverContainer.Type
+          , zoekt-webserver : Zoekt-WebserverContainer.Type
+          }
       , default =
-        { zoekt-indexserver = Zoekt-IndexserverContainer.default, zoekt-webserver = Zoekt-WebserverContainer.default }
+        { zoekt-indexserver = Zoekt-IndexserverContainer.default
+        , zoekt-webserver = Zoekt-WebserverContainer.default
+        }
       }
 
 let StatefulSet =

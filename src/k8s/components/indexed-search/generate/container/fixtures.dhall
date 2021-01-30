@@ -1,6 +1,9 @@
 let Kubernetes/SecurityContext =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
 
+let Kubernetes/EnvVar =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
 let Kubernetes/VolumeMount =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
 
@@ -9,33 +12,32 @@ let Kubernetes/ResourceRequirements =
 
 let Fixtures = ../../../../util/test-fixtures/package.dhall
 
-let Configuration/Internal/Container/symbols =
-      ../../configuration/internal/container/symbols.dhall
+let Configuration/Internal/Container/zoekt-indexserver =
+      ../../configuration/internal/container/zoekt-indexserver.dhall
 
-let environment/toList = ../../configuration/environment/toList.dhall
+let Configuration/Internal/Container/zoekt-webserver =
+      ../../configuration/internal/container/zoekt-webserver.dhall
 
-let TestConfig
-    : Configuration/Internal/Container/symbols
+let TestConfigIndexServer
+    : Configuration/Internal/Container/zoekt-indexserver
     = { securityContext = None Kubernetes/SecurityContext.Type
       , resources = None Kubernetes/ResourceRequirements.Type
       , image = Fixtures.Image.Base
-      , envVars = Some
-          ( environment/toList
-              { CACHE_DIR = Fixtures.Environment.Secret
-              , POD_NAME = Fixtures.Environment.Secret
-              , SYMBOLS_CACHE_SIZE_MB = Fixtures.Environment.Secret
-              }
-          )
+      , envVars = None (List Kubernetes/EnvVar.Type)
       , volumeMounts = None (List Kubernetes/VolumeMount.Type)
       }
 
-in  { symbols =
-      { Config = TestConfig
-      , Environment.expected
-        =
-        [ Fixtures.Environment.Secret
-        , Fixtures.Environment.Secret
-        , Fixtures.Environment.Secret
-        ]
+let TestConfigWebServer
+    : Configuration/Internal/Container/zoekt-webserver
+    = { securityContext = None Kubernetes/SecurityContext.Type
+      , resources = None Kubernetes/ResourceRequirements.Type
+      , image = Fixtures.Image.Base
+      , envVars = None (List Kubernetes/EnvVar.Type)
+      , volumeMounts = None (List Kubernetes/VolumeMount.Type)
+      }
+
+in  { indexed-search =
+      { ConfigIndexServer = TestConfigIndexServer
+      , ConfigWebServer = TestConfigWebServer
       }
     }

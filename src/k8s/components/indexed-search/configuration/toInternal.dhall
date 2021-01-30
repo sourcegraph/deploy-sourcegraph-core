@@ -10,11 +10,11 @@ let Configuration/internal = ./internal.dhall
 
 let Configuration/internal/statefulset = ./internal/statefulset.dhall
 
-let Configuration/internal/service/indexed-search = ./internal/service/indexed-search.dhall
+let Configuration/internal/service/indexed-search =
+      ./internal/service/indexed-search.dhall
 
-let Configuration/internal/service/indexed-search-indexer = ./internal/service/indexed-search-indexer.dhall
-
-let Configuration/internal/Environment = ./environment/environment.dhall
+let Configuration/internal/service/indexed-search-indexer =
+      ./internal/service/indexed-search-indexer.dhall
 
 let Configuration/internal/Containers/zoekt-indexserver =
       ./internal/container/zoekt-indexserver.dhall
@@ -282,7 +282,8 @@ let Test/StatefulSet/Replicas =
         ≡ Fixtures.Replicas
 
 let Service/IndexedSearch/toInternal
-    : ∀(cg : Configuration/global.Type) → Configuration/internal/service/indexed-search
+    : ∀(cg : Configuration/global.Type) →
+        Configuration/internal/service/indexed-search
     = λ(cg : Configuration/global.Type) → { namespace = cg.Global.namespace }
 
 let Test/Service/IndexedSearch/Namespace/none =
@@ -302,7 +303,8 @@ let Test/Service/IndexedSearch/Namespace/Some =
         ≡ Some Fixtures.Namespace
 
 let Service/IndexedSearchIndexer/toInternal
-    : ∀(cg : Configuration/global.Type) → Configuration/internal/service/indexed-search-indexer
+    : ∀(cg : Configuration/global.Type) →
+        Configuration/internal/service/indexed-search-indexer
     = λ(cg : Configuration/global.Type) → { namespace = cg.Global.namespace }
 
 let Test/Service/IndexedSearchIndexer/Namespace/none =
