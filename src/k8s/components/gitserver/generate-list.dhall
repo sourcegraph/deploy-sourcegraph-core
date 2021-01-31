@@ -8,6 +8,10 @@ let Service/generate = ./generate/service.dhall
 
 let StatefulSet/generate = ./generate/statefulset.dhall
 
+let PersistentVolumes/generate = ./generate/persistentvolumes.dhall
+
+let pvsToUnionList = ../../util/persistentvolumes.dhall
+
 let generate-list
     : Configuration/global.Type → List Kubernetes/Union
     = λ(cg : Configuration/global.Type) →
@@ -17,8 +21,13 @@ let generate-list
 
         let service = Service/generate c.service
 
-        in  [ Kubernetes/Union.StatefulSet statefulSet
-            , Kubernetes/Union.Service service
-            ]
+        let persistentvolumes = PersistentVolumes/generate c.persistentvolumes
+
+        let pvs = pvsToUnionList persistentvolumes
+
+        in    [ Kubernetes/Union.StatefulSet statefulSet
+              , Kubernetes/Union.Service service
+              ]
+            # pvs
 
 in  generate-list
