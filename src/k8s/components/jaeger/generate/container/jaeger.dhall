@@ -4,6 +4,12 @@ let Kubernetes/Container =
 let Kubernetes/ContainerPort =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ContainerPort.dhall
 
+let Kubernetes/ResourceRequirements =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ResourceRequirements.dhall
+
+let Kubernetes/VolumeMount =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
+
 let Kubernetes/Probe =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Probe.dhall
 
@@ -16,6 +22,10 @@ let util = ../../../../../util/package.dhall
 
 let Configuration/Internal/Container/jaeger =
       ../../configuration/internal/container/jaeger.dhall
+
+let Fixtures/global = ../../../../util/test-fixtures/package.dhall
+
+let Fixtures/Container/jaeger = (./fixtures.dhall).jaeger
 
 let Generate
     : ∀(c : Configuration/Internal/Container/jaeger) → Kubernetes/Container.Type
@@ -78,5 +88,55 @@ let Generate
             , securityContext
             , volumeMounts
             }
+
+let tc = Fixtures/Container/jaeger.Config
+
+let Test/image/show =
+      assert : (Generate tc).image ≡ Some Fixtures/global.Image.BaseShow
+
+let Test/resources/some =
+        assert
+      :   ( Generate (tc with resources = Fixtures/global.Resources.Expected)
+          ).resources
+        ≡ Fixtures/global.Resources.Expected
+
+let Test/resources/none =
+        assert
+      :   ( Generate
+              (tc with resources = None Kubernetes/ResourceRequirements.Type)
+          ).resources
+        ≡ Fixtures/global.Resources.EmptyExpected
+
+let Test/securityContext/some =
+        assert
+      :   ( Generate
+              ( tc
+                with securityContext = Fixtures/global.SecurityContext.SELinux
+              )
+          ).securityContext
+        ≡ Fixtures/global.SecurityContext.SELinux
+
+let Test/securityContext/none =
+        assert
+      :   ( Generate
+              (tc with securityContext = Fixtures/global.SecurityContext.Empty)
+          ).securityContext
+        ≡ Fixtures/global.SecurityContext.Empty
+
+let Test/volumeMounts/none =
+        assert
+      :   ( Generate
+              (tc with volumeMounts = None (List Kubernetes/VolumeMount.Type))
+          ).volumeMounts
+        ≡ None (List Kubernetes/VolumeMount.Type)
+
+let Test/volumeMounts/none =
+        assert
+      :   ( Generate
+              ( tc
+                with volumeMounts = Some [ Fixtures/global.VolumeMounts.Lights ]
+              )
+          ).volumeMounts
+        ≡ Some [ Fixtures/global.VolumeMounts.Lights ]
 
 in  Generate

@@ -4,6 +4,12 @@ let Kubernetes/Deployment =
 let Kubernetes/ObjectMeta =
       ../../../../../deps/k8s/schemas/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta.dhall
 
+let Kubernetes/Volume =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
+let Kubernetes/Container =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
+
 let Kubernetes/DeploymentSpec =
       ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.DeploymentSpec.dhall
 
@@ -28,6 +34,27 @@ let Configuration/Internal/Deployment =
       ../../configuration/internal/deployment.dhall
 
 let Container/jaeger/generate = ../container/jaeger.dhall
+
+let Fixtures/deployment = ./fixtures.dhall
+
+let Fixtures/global = ../../../../util/test-fixtures/package.dhall
+
+let Util/listToOptional = ../../../../util/functions/list-to-optional.dhall
+
+let Pod/generate
+    : ∀(c : Configuration/Internal/Deployment) → Kubernetes/PodSpec.Type
+    = λ(c : Configuration/Internal/Deployment) →
+        let volumes =
+              Util/listToOptional Kubernetes/Volume.Type c.additionalVolumes
+
+        in  Kubernetes/PodSpec::{
+            , containers =
+                [ Container/jaeger/generate c.Containers.jaeger ] # c.sideCars
+            , securityContext = Some Kubernetes/PodSecurityContext::{
+              , runAsUser = Some 0
+              }
+            , volumes
+            }
 
 let Deployment/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/Deployment.Type
@@ -82,18 +109,54 @@ let Deployment/generate
                       , { mapKey = "deploy", mapValue = "sourcegraph" }
                       ]
                     }
-                  , spec = Some Kubernetes/PodSpec::{
-                    , containers =
-                          [ Container/jaeger/generate c.Containers.jaeger ]
-                        # c.sideCars
-                    , securityContext = Some Kubernetes/PodSecurityContext::{
-                      , runAsUser = Some 0
-                      }
-                    }
+                  , spec = Some (Pod/generate c)
                   }
                 }
               }
 
         in  deployment
+
+let tc = Fixtures/deployment.jaeger.Config
+
+let Test/namespace/none =
+        assert
+      :   ( Deployment/generate (tc with namespace = None Text)
+          ).metadata.namespace
+        ≡ None Text
+
+let Test/namespace/some =
+        assert
+      :   ( Deployment/generate
+              (tc with namespace = Some Fixtures/global.Namespace)
+          ).metadata.namespace
+        ≡ Some Fixtures/global.Namespace
+
+let Test/sidecars/empty =
+        assert
+      :   ( Pod/generate
+              (tc with sideCars = ([] : List Kubernetes/Container.Type))
+          ).containers
+        ≡ [ Container/jaeger/generate tc.Containers.jaeger ]
+
+let Test/sidecars/nonEmpty =
+        assert
+      :   ( Pod/generate (tc with sideCars = [ Fixtures/global.SideCars.Foo ])
+          ).containers
+        ≡   [ Container/jaeger/generate tc.Containers.jaeger ]
+          # [ Fixtures/global.SideCars.Foo ]
+
+let Test/volumes/nonEmpty =
+        assert
+      :   ( Pod/generate
+              (tc with additionalVolumes = [ Fixtures/global.Volumes.NFS ])
+          ).volumes
+        ≡ Some [ Fixtures/global.Volumes.NFS ]
+
+let Test/volumes/empty =
+        assert
+      :   ( Pod/generate
+              (tc with additionalVolumes = [ Fixtures/global.Volumes.NFS ])
+          ).volumes
+        ≡ Some [ Fixtures/global.Volumes.NFS ]
 
 in  Deployment/generate

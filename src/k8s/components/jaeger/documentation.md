@@ -7,8 +7,9 @@
       - [image](#image)
       - [additional environment variables](#additional-environment-variables)
       - [resources](#resources)
-      - [additional volume mounts](#additional-volume-mounts)
+      - [additional volumes](#additional-volumes)
   - [Additional SideCar Containers](#additional-sidecar-containers)
+  - [Additional volumes](#additional-volumes-1)
 
 # Deployment
 
@@ -73,28 +74,31 @@ with jaeger.Deployment.Containers.jaeger.additionalEnvVars = [ Sourcegraph.Util.
 | Memory            | `with jaeger.Deployment.Containers.jaeger.resources.requests.memory = Some <Text>`           | `Some "1Gi"` / `None Text`   |
 | Ephemeral storage | `with jaeger.Deployment.Containers.jaeger.resources.requests.ephemeralStorage = Some <Text>` | `Some "500Gi"` / `None Text` |
 
-#### additional volume mounts
+#### additional volumes
 
 **Customization snipppet**:
 
 ```dhall
 
-with jaeger.Deployment.Containers.jaeger.additionalVolumeMounts = [ Sourcegraph.Kubernetes.VolumeMount :: {....} ]
+with jaeger.Deployment.additionalVolumes = [ Sourcegraph.Kubernetes.Volume :: {....} ]
 ```
 
 **Default value**:
 
 ```dhall
 
-[] : (List Sourcegraph.Kubernetes/VolumeMount.Type)
+[] : (List Sourcegraph.Kubernetes.Volume.Type)
 ```
 
 **Example value**
 
 ```dhall
-Sourcegraph.Kubernetes.VolumeMount::{
-          , name = "test volume"
-          , mountPath = "/d/e/a/d/b/e/e/f"
+Sourcegraph.Kubernetes.Volume::{
+          , name = "your-test-volume"
+          , nfs = Some Sourcegraph.Kubernetes.NFSVolumeSource::{
+            , path = "TEST_PATH"
+            , server = "my.testing.server.io"
+            }
 }
 ```
 
@@ -111,7 +115,7 @@ with jaeger.Deployment.additionalSideCars = [ Sourcegraph.Kubernetes.Container :
 
 ```dhall
 
-[] : (List Sourcegraph.Kubernetes/Container.Type)
+[] : (List Sourcegraph.Kubernetes.Container.Type)
 ```
 
 **Example value**:
@@ -128,5 +132,33 @@ Sourcegraph.Kubernetes.Container::{
             ]
           , image = Some "index.docker.io/your/image:tag@sha256:123456"
           , name = "sidecar"
+}
+```
+
+## Additional volumes
+
+**Customization snipppet**:
+
+```dhall
+
+with jaeger.Deployment.additionalVolumes = [ Sourcegraph.Kubernetes.Volume :: {....} ]
+```
+
+**Default value**:
+
+```dhall
+
+[] : (List Sourcegraph.Kubernetes.Volume.Type)
+```
+
+**Example value**
+
+```dhall
+Sourcegraph.Kubernetes.Volume::{
+          , name = "your-test-volume"
+          , nfs = Some Sourcegraph.Kubernetes.NFSVolumeSource::{
+            , path = "TEST_PATH"
+            , server = "my.testing.server.io"
+            }
 }
 ```

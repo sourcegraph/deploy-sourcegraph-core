@@ -4,6 +4,9 @@ let Kubernetes/EnvVar =
 let Kubernetes/VolumeMount =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
 
+let Kubernetes/Volume =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
 let Kubernetes/Container =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
@@ -56,10 +59,12 @@ let Deployment =
       { Type =
           { Containers : Containers.Type
           , additionalSideCars : List Kubernetes/Container.Type
+          , additionalVolumes : List Kubernetes/Volume.Type
           }
       , default =
         { Containers = Containers.default
         , additionalSideCars = [] : List Kubernetes/Container.Type
+        , additionalVolumes = [] : List Kubernetes/Volume.Type
         }
       }
 
