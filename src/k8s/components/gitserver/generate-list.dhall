@@ -1,9 +1,3 @@
-let List/map =
-      https://prelude.dhall-lang.org/v18.0.0/List/map.dhall sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
-
-let Kubernetes/PersistentVolume =
-      ../../../deps/k8s/schemas/io.k8s.api.core.v1.PersistentVolume.dhall
-
 let Configuration/global = ../../configuration/global.dhall
 
 let Configuration/toInternal = ./configuration/toInternal.dhall
