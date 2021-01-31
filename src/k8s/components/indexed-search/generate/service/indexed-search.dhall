@@ -50,9 +50,7 @@ let Service/generate
                 }
               , spec = Some Kubernetes/ServiceSpec::{
                 , clusterIP = Some "None"
-                , ports = Some
-                  [ Kubernetes/ServicePort::{ port = 6070 }
-                  ]
+                , ports = Some [ Kubernetes/ServicePort::{ port = 6070 } ]
                 , selector = Some
                   [ { mapKey = "app", mapValue = "indexed-search" } ]
                 , type = Some "ClusterIP"

@@ -34,11 +34,11 @@ let Container/zoekt-webserver/generate
 
         let k8sProbe = util.HealthCheck/tok8s simple/zoekt-webserver.HealthCheck
 
-        let probe = k8sProbe with failureThreshold = None Natural
-
         let readinessProbe
             : Kubernetes/Probe.Type
-            = probe
+            = k8sProbe
+              with periodSeconds = Some 5
+              with failureThreshold = Some 3
               with initialDelaySeconds = None Natural
 
         let httpPort =

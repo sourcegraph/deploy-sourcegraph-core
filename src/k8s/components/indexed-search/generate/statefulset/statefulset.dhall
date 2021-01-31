@@ -1,6 +1,9 @@
 let Kubernetes/StatefulSet =
       ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.StatefulSet.dhall
 
+let Kubernetes/Volume =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
 let Kubernetes/ObjectMeta =
       ../../../../../deps/k8s/schemas/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta.dhall
 
@@ -43,20 +46,29 @@ let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
 let tc = Fixtures/statefulset.indexed-search.Config
 
+let Util/ListToOptional = ../../../../util/functions/list-to-optional.dhall
+
 let PodSpec/generate
     : ∀(c : Configuration/Internal/StatefulSet) → Kubernetes/PodSpec.Type
     = λ(c : Configuration/Internal/StatefulSet) →
-        Kubernetes/PodSpec::{
-        , containers =
-              [ Container/zoekt-webserver/generate c.Containers.zoekt-webserver
-              , Container/zoekt-indexserver/generate
-                  c.Containers.zoekt-indexserver
-              ]
-            # c.sideCars
-        , securityContext = Some Kubernetes/PodSecurityContext::{
-          , runAsUser = Some 0
-          }
-        }
+        let volumes =
+              Util/ListToOptional
+                Kubernetes/Volume.Type
+                [ Kubernetes/Volume::{ name = "data" } ]
+
+        in  Kubernetes/PodSpec::{
+            , containers =
+                  [ Container/zoekt-webserver/generate
+                      c.Containers.zoekt-webserver
+                  , Container/zoekt-indexserver/generate
+                      c.Containers.zoekt-indexserver
+                  ]
+                # c.sideCars
+            , securityContext = Some Kubernetes/PodSecurityContext::{
+              , runAsUser = Some 0
+              }
+            , volumes
+            }
 
 let StatefulSetSpec/generate
     : ∀(c : Configuration/Internal/StatefulSet) →

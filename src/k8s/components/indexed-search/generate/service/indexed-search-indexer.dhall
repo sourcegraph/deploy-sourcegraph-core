@@ -52,7 +52,6 @@ let Service/generate
                 , clusterIP = Some "None"
                 , ports = Some
                   [ Kubernetes/ServicePort::{
-
                     , port = 6072
                     , targetPort = Some
                         (< Int : Natural | String : Text >.Int 6072)
