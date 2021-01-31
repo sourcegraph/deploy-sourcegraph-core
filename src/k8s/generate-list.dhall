@@ -14,6 +14,9 @@ let Postgres/generate-list = ./components/postgres/generate-list.dhall
 
 let Searcher/generate-list = ./components/searcher/generate-list.dhall
 
+let IndexedSearch/generate-list =
+      ./components/indexed-search/generate-list.dhall
+
 let Kubernetes/Union = ./union.dhall
 
 let Configuration/global = ./configuration/global.dhall
@@ -36,6 +39,8 @@ let generate-list
         let xs = xs # Postgres/generate-list c
 
         let xs = xs # Searcher/generate-list c
+
+        let xs = xs # IndexedSearch/generate-list c
 
         in  xs
 
