@@ -23,6 +23,8 @@ let Searcher/configuration = ../components/searcher/configuration/user.dhall
 
 let Minio/configuration = ../components/minio/configuration/user.dhall
 
+let Jaeger/configuration = ../components/jaeger/configuration/user.dhall
+
 let IndexedSearch/configuration =
       ../components/indexed-search/configuration/user.dhall
 
@@ -48,6 +50,7 @@ let configuration =
           , searcher : Searcher/configuration.Type
           , pgsql : Postgres/configuration.Type
           , minio : Minio/configuration.Type
+          , jaeger : Jaeger/configuration.Type
           , indexed-search : IndexedSearch/configuration.Type
           }
       , default =
@@ -68,6 +71,7 @@ let configuration =
         , searcher = Searcher/configuration.default
         , pgsql = Postgres/configuration.default
         , minio = Minio/configuration.default
+        , jaeger = Jaeger/configuration.default
         , indexed-search = IndexedSearch/configuration.default
         }
       }

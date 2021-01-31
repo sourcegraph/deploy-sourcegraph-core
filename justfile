@@ -74,3 +74,10 @@ pipeline-file := "./src/k8s/pipeline.dhall"
 
 diff-ds:
     dhall diff '{{deploy-sourcegraph-file}}' '{{pipeline-file}}'
+
+rewrite: rewrite-ds
+
+k8s-schemas-file := "./src/deps/k8s/schemas.dhall"
+
+rewrite-ds:
+    dhall rewrite-with-schemas --inplace '{{deploy-sourcegraph-file}}' --schemas '{{k8s-schemas-file}}'

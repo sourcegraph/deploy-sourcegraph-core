@@ -22,6 +22,8 @@ let IndexedSearch/generate = ./components/indexed-search/generate.dhall
 
 let Shape = ./shape.dhall
 
+let Jaeger/generate = ./components/jaeger/generate.dhall
+
 let Configuration/global = ./configuration/global.dhall
 
 let generate
@@ -37,6 +39,7 @@ let generate
         , cadvisor = CAdvisor/generate c
         , minio = Minio/generate c
         , searcher = Searcher/generate c
+        , jaeger = Jaeger/generate c
         , indexed-search = IndexedSearch/generate c
         }
 
