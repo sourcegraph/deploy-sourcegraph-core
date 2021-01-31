@@ -152,5 +152,6 @@ dist
 /deploy-sourcegraph.dhall
 /deploy-sourcegraph-dot-com.dhall
 /k8sTypesUnion.dhall
+*pipeline-dot-com.dhall*
 
 /test-k8s-pipeline-output
