@@ -73,7 +73,7 @@ deploy-sourcegraph-file := "./deploy-sourcegraph.dhall"
 pipeline-file := "./src/k8s/pipeline.dhall"
 
 diff-ds:
-    dhall diff '({{deploy-sourcegraph-file}}).jaeger' '({{pipeline-file}}).jaeger'
+    dhall diff '{{deploy-sourcegraph-file}}' '{{pipeline-file}}'
 
 rewrite: rewrite-ds
 
