@@ -254,6 +254,8 @@ let StatefulSet/toInternal
     = λ(cg : Configuration/global.Type) →
         let namespace = cg.Global.namespace
 
+        let storageClassName = cg.Global.storageClassname
+
         let opts = cg.indexed-search.StatefulSet
 
         let replicas = opts.replicas
@@ -265,6 +267,8 @@ let StatefulSet/toInternal
               , zoekt-webserver = Container/Zoekt-Webserver/toInternal cg
               }
             , sideCars = opts.additionalSideCars
+            , storageClassName
+            , dataVolumeSize = opts.dataVolumeSize
             }
 
 let Test/StatefulSet/Namespace/none =

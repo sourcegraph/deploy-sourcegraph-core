@@ -14,6 +14,7 @@
       - [resources](#resources-1)
       - [additional volume mounts](#additional-volume-mounts-1)
   - [Additional SideCar Containers](#additional-sidecar-containers)
+  - [Data volume size](#data-volume-size)
 
 # StatefulSet
 
@@ -218,4 +219,16 @@ Sourcegraph.Kubernetes.Container::{
           , image = Some "index.docker.io/your/image:tag@sha256:123456"
           , name = "sidecar"
 }
+```
+
+## Data volume size
+
+```dhall
+with indexed-search.StatefulSet.dataVolumeSize = <Text>
+```
+
+**Default value**:
+
+```dhall
+"200Gi"
 ```

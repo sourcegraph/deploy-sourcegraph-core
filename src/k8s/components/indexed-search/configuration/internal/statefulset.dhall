@@ -11,6 +11,8 @@ let StatefulSetConfiguration =
       , replicas : Natural
       , Containers : ContainerConfiguration
       , sideCars : List Kubernetes/Container.Type
+      , dataVolumeSize : Text
+      , storageClassName : Optional Text
       }
 
 in  StatefulSetConfiguration

@@ -211,7 +211,6 @@ let StatefulSet/toInternal
         let gitserverContainer =
               { image = gitserverImage
               , rpc/port = simple/gitserver.ports.rpc
-              , reposVolumeSize = cg.gitserver.StatefulSet.reposVolumeSize
               , containerResources = gitserverResources
               , healthcheck = gitServerHealthCheck
               , securityContext
@@ -226,6 +225,7 @@ let StatefulSet/toInternal
               { gitserver = gitserverContainer
               , jaeger = Container/Jaeger/toInternal cg
               }
+            , reposVolumeSize = cg.gitserver.StatefulSet.reposVolumeSize
             , podSecurityContext
             , sideCars = cg.gitserver.StatefulSet.additionalSideCars
             }

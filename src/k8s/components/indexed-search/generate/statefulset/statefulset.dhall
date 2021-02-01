@@ -4,6 +4,12 @@ let Kubernetes/StatefulSet =
 let Kubernetes/Volume =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
 
+let Kubernetes/PersistentVolumeClaimSpec =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PersistentVolumeClaimSpec.dhall
+
+let Kubernetes/ResourceRequirements =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ResourceRequirements.dhall
+
 let Kubernetes/ObjectMeta =
       ../../../../../deps/k8s/schemas/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta.dhall
 
@@ -24,6 +30,9 @@ let Kubernetes/PodTemplateSpec =
 
 let Kubernetes/PodSecurityContext =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSecurityContext.dhall
+
+let Kubernetes/PersistentVolumeClaim =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PersistentVolumeClaim.dhall
 
 let deploySourcegraphLabel = { deploy = "sourcegraph" }
 
@@ -70,11 +79,38 @@ let PodSpec/generate
             , volumes
             }
 
+let DataVolume/generate
+    : ∀(c : Configuration/Internal/StatefulSet) →
+        Kubernetes/PersistentVolumeClaim.Type
+    = λ(c : Configuration/Internal/StatefulSet) →
+        let size = c.dataVolumeSize
+
+        let resources =
+              Kubernetes/ResourceRequirements::{
+              , requests = Some (toMap { storage = size })
+              }
+
+        let storageClassName = c.storageClassName
+
+        in  Kubernetes/PersistentVolumeClaim::{
+            , metadata = Kubernetes/ObjectMeta::{
+              , labels = Some (toMap deploySourcegraphLabel)
+              , name = Some "data"
+              }
+            , spec = Some Kubernetes/PersistentVolumeClaimSpec::{
+              , accessModes = Some [ "ReadWriteOnce" ]
+              , resources = Some resources
+              , storageClassName
+              }
+            }
+
 let StatefulSetSpec/generate
     : ∀(c : Configuration/Internal/StatefulSet) →
         Kubernetes/StatefulSetSpec.Type
     = λ(c : Configuration/Internal/StatefulSet) →
         let replicas = c.replicas
+
+        let volumeClaimTemplates = [ DataVolume/generate c ]
 
         in  Kubernetes/StatefulSetSpec::{
             , serviceName = "indexed-search"
@@ -92,6 +128,7 @@ let StatefulSetSpec/generate
                 }
               , spec = Some (PodSpec/generate c)
               }
+            , volumeClaimTemplates = Some volumeClaimTemplates
             }
 
 let Test/replicas =
@@ -140,5 +177,15 @@ let Test/namespace/some =
               (tc with namespace = Some Fixtures/global.Namespace)
           ).metadata.namespace
         ≡ Some Fixtures/global.Namespace
+
+let Test/volume =
+        assert
+      :   DataVolume/generate
+            ( tc
+              with storageClassName = Some
+                  Fixtures/statefulset.Volume.StorageClassName
+              with dataVolumeSize = Fixtures/statefulset.Volume.Size
+            )
+        ≡ Fixtures/statefulset.Volume.Expected
 
 in  StatefulSet/generate
