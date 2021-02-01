@@ -27,7 +27,6 @@ let Container/gitserver =
       , rpc/port : Natural
       , securityContext : Optional Kubernetes/SecurityContext.Type
       , containerResources : Optional Kubernetes/ResourceRequirements.Type
-      , reposVolumeSize : Text
       , envVars : Optional (List Kubernetes/EnvVar.Type)
       , volumeMounts : Optional (List Kubernetes/VolumeMount.Type)
       }
@@ -46,6 +45,7 @@ let config =
       , podSecurityContext : Optional Kubernetes/PodSecurityContext.Type
       , Containers : ContainerConfiguration
       , storageClassName : Optional Text
+      , reposVolumeSize : Text
       , sideCars : List Kubernetes/Container.Type
       }
 

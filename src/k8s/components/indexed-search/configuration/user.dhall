@@ -91,11 +91,13 @@ let StatefulSet =
           { replicas : Natural
           , Containers : Containers.Type
           , additionalSideCars : List Kubernetes/Container.Type
+          , dataVolumeSize : Text
           }
       , default =
         { replicas = 1
         , Containers = Containers.default
         , additionalSideCars = [] : List Kubernetes/Container.Type
+        , dataVolumeSize = "200Gi"
         }
       }
 

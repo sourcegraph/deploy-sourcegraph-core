@@ -1,14 +1,14 @@
 let Kubernetes/SecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
 
-let Kubernetes/VolumeMount =
-      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
 let Configuration/global = ../../../configuration/global.dhall
 
 let Configuration/internal = ./internal.dhall
 
 let Configuration/internal/statefulset = ./internal/statefulset.dhall
+
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 
 let Configuration/internal/service/indexed-search =
       ./internal/service/indexed-search.dhall
@@ -23,6 +23,13 @@ let Configuration/internal/Containers/zoekt-webserver =
       ./internal/container/zoekt-webserver.dhall
 
 let util = ../../../../util/package.dhall
+
+let Util/JoinOptionalList = ../../../util/functions/join-optional-list.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
+
+let Kubernetes/VolumeMount =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
 
 let environment/toList = ./environment/toList.dhall
 
@@ -64,7 +71,11 @@ let Container/Zoekt-Indexserver/toInternal
 
         let envVars = environment/toList opts.environment
 
-        let envVars = Some (envVars # opts.additionalEnvVars)
+        let envVars =
+              Util/JoinOptionalList
+                Kubernetes/EnvVar.Type
+                (Some envVars)
+                (Some opts.additionalEnvVars)
 
         let simple/indexserver = Simple/IndexedSearch.Containers.indexserver
 
@@ -74,14 +85,12 @@ let Container/Zoekt-Indexserver/toInternal
               , name = "data"
               }
 
-        let volumeMounts = [ dataVolumeMount ] # opts.additionalVolumeMounts
+        let volumeMounts =
+              Util/ListToOptional
+                Kubernetes/VolumeMount.Type
+                ([ dataVolumeMount ] # opts.additionalVolumeMounts)
 
-        in  { image
-            , resources
-            , securityContext
-            , envVars
-            , volumeMounts = Some volumeMounts
-            }
+        in  { image, resources, securityContext, envVars, volumeMounts }
 
 let Container/Zoekt-Webserver/toInternal
     : ∀(cg : Configuration/global.Type) →
@@ -97,7 +106,11 @@ let Container/Zoekt-Webserver/toInternal
 
         let envVars = environment/toList opts.environment
 
-        let envVars = Some (envVars # opts.additionalEnvVars)
+        let envVars =
+              Util/JoinOptionalList
+                Kubernetes/EnvVar.Type
+                (Some envVars)
+                (Some opts.additionalEnvVars)
 
         let simple/webserver = Simple/IndexedSearch.Containers.webserver
 
@@ -107,14 +120,12 @@ let Container/Zoekt-Webserver/toInternal
               , name = "data"
               }
 
-        let volumeMounts = [ dataVolumeMount ] # opts.additionalVolumeMounts
+        let volumeMounts =
+              Util/ListToOptional
+                Kubernetes/VolumeMount.Type
+                ([ dataVolumeMount ] # opts.additionalVolumeMounts)
 
-        in  { image
-            , resources
-            , securityContext
-            , envVars
-            , volumeMounts = Some volumeMounts
-            }
+        in  { image, resources, securityContext, envVars, volumeMounts }
 
 let Test/Container/Zoekt-Indexserver/Image =
         assert
@@ -243,6 +254,8 @@ let StatefulSet/toInternal
     = λ(cg : Configuration/global.Type) →
         let namespace = cg.Global.namespace
 
+        let storageClassName = cg.Global.storageClassname
+
         let opts = cg.indexed-search.StatefulSet
 
         let replicas = opts.replicas
@@ -254,6 +267,8 @@ let StatefulSet/toInternal
               , zoekt-webserver = Container/Zoekt-Webserver/toInternal cg
               }
             , sideCars = opts.additionalSideCars
+            , storageClassName
+            , dataVolumeSize = opts.dataVolumeSize
             }
 
 let Test/StatefulSet/Namespace/none =

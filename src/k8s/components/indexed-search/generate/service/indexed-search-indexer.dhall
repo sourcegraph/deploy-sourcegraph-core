@@ -49,9 +49,9 @@ let Service/generate
                 , name = Some "indexed-search-indexer"
                 }
               , spec = Some Kubernetes/ServiceSpec::{
+                , clusterIP = Some "None"
                 , ports = Some
                   [ Kubernetes/ServicePort::{
-                    , name = Some "port"
                     , port = 6072
                     , targetPort = Some
                         (< Int : Natural | String : Text >.Int 6072)

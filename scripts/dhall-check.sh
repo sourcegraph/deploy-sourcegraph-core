@@ -4,12 +4,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"/..
 set -euo pipefail
 
 DHALL_FILES=()
-
-if [ $# -eq 0 ]; then
-  mapfile -t DHALL_FILES < <(scripts/ls-dhall-files.sh)
-else
-  DHALL_FILES=("$@")
-fi
+mapfile -t DHALL_FILES < <(scripts/ls-dhall-files.sh)
 
 # https://unix.stackexchange.com/a/256201
 function my_chronic() {
@@ -20,6 +15,23 @@ function my_chronic() {
   rm -f "$tmp"
   return "$ret" # return the exit status of the command
 }
+
+PACKAGE_FILE="${PACKAGE_FILE:-"./src/k8s/package.dhall"}"
+
+declare -A TRANSITIVE_PACKAGE_FILES
+while IFS= read -r; do
+  # shellcheck disable=SC2034  # This variable is referenced below
+  TRANSITIVE_PACKAGE_FILES[$REPLY]=1
+done < <(dhall resolve --transitive-dependencies --file "${PACKAGE_FILE}")
+
+# Walk through all the files, and strip any that are already indirectly referenced by the package file (so that we don't re-do work)
+UNIQUE_DHALL_FILES=()
+for file in "${DHALL_FILES[@]}"; do
+  file="./${file}"
+  if [[ ! -v TRANSITIVE_PACKAGE_FILES[${file}] ]]; then
+    UNIQUE_DHALL_FILES+=("${file}")
+  fi
+done
 
 export -f my_chronic
 
@@ -50,4 +62,4 @@ function check() {
 }
 export -f check
 
-./scripts/parallel_run.sh check {} ::: "${DHALL_FILES[@]}"
+./scripts/parallel_run.sh check {} ::: "${UNIQUE_DHALL_FILES[@]}"

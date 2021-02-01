@@ -49,9 +49,8 @@ let Service/generate
                 , name = Some "indexed-search"
                 }
               , spec = Some Kubernetes/ServiceSpec::{
-                , ports = Some
-                  [ Kubernetes/ServicePort::{ name = Some "port", port = 6070 }
-                  ]
+                , clusterIP = Some "None"
+                , ports = Some [ Kubernetes/ServicePort::{ port = 6070 } ]
                 , selector = Some
                   [ { mapKey = "app", mapValue = "indexed-search" } ]
                 , type = Some "ClusterIP"

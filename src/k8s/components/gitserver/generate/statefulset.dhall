@@ -137,9 +137,7 @@ let generate
                       , storageClassName = c.storageClassName
                       , resources = Some Kubernetes/ResourceRequirements::{
                         , requests = Some
-                          [ { mapKey = "storage"
-                            , mapValue = c.Containers.gitserver.reposVolumeSize
-                            }
+                          [ { mapKey = "storage", mapValue = c.reposVolumeSize }
                           ]
                         }
                       }
