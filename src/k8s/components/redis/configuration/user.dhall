@@ -144,10 +144,11 @@ let RedisStoreDeployment =
       }
 
 let configuration =
-      { Type.Deployment
-        =
-          { redis-cache : RedisCacheDeployment.Type
-          , redis-store : RedisStoreDeployment.Type
+      { Type =
+          { Deployment :
+              { redis-cache : RedisCacheDeployment.Type
+              , redis-store : RedisStoreDeployment.Type
+              }
           }
       , default.Deployment
         =
