@@ -9,33 +9,46 @@ let Kubernetes/ResourceRequirements =
 
 let Fixtures = ../../../../util/test-fixtures/package.dhall
 
-let Configuration/Internal/Container/symbols =
-      ../../configuration/internal/container/symbols.dhall
+let Configuration/Internal/Container/redis-cache =
+      ../../configuration/internal/container/redis-cache.dhall
+
+let Configuration/Internal/Container/redis-store =
+      ../../configuration/internal/container/redis-store.dhall
+
+let Configuration/Internal/Container/redis-exporter =
+      ../../configuration/internal/container/redis-exporter.dhall
 
 let environment/toList = ../../configuration/environment/toList.dhall
 
-let TestConfig
-    : Configuration/Internal/Container/symbols
+let TestConfig/RedisCache
+    : Configuration/Internal/Container/redis-cache
     = { securityContext = None Kubernetes/SecurityContext.Type
       , resources = None Kubernetes/ResourceRequirements.Type
       , image = Fixtures.Image.Base
-      , envVars = Some
-          ( environment/toList
-              { CACHE_DIR = Fixtures.Environment.Secret
-              , POD_NAME = Fixtures.Environment.Secret
-              , SYMBOLS_CACHE_SIZE_MB = Fixtures.Environment.Secret
-              }
-          )
+      , envVars = Some [ Fixtures.Environment.Secret ]
       , volumeMounts = None (List Kubernetes/VolumeMount.Type)
       }
 
-in  { symbols =
-      { Config = TestConfig
-      , Environment.expected
-        =
-        [ Fixtures.Environment.Secret
-        , Fixtures.Environment.Secret
-        , Fixtures.Environment.Secret
-        ]
+let TestConfig/RedisStore
+    : Configuration/Internal/Container/redis-store
+    = { securityContext = None Kubernetes/SecurityContext.Type
+      , resources = None Kubernetes/ResourceRequirements.Type
+      , image = Fixtures.Image.Base
+      , envVars = Some [ Fixtures.Environment.Secret ]
+      , volumeMounts = None (List Kubernetes/VolumeMount.Type)
+      }
+
+let TestConfig/RedisExporter
+    : Configuration/Internal/Container/redis-exporter
+    = { securityContext = None Kubernetes/SecurityContext.Type
+      , resources = None Kubernetes/ResourceRequirements.Type
+      , image = Fixtures.Image.Base
+      }
+
+in  { redis =
+      { Config/RedisCache = TestConfig/RedisCache
+      , Config/RedisStore = TestConfig/RedisStore
+      , Config/RedisExporter = TestConfig/RedisExporter
+      , Environment.expected = [ Fixtures.Environment.Secret ]
       }
     }
