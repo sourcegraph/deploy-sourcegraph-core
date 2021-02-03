@@ -12,7 +12,7 @@ let Kubernetes/ServiceSpec =
 
 let Configuration/Internal/Service = ../../configuration/internal/service.dhall
 
-let Fixtures/symbols/service = ./fixtures.dhall
+let Fixtures/redis/service = ./fixtures.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
@@ -26,28 +26,28 @@ let Service/generate
               , metadata = Kubernetes/ObjectMeta::{
                 , namespace
                 , annotations = Some
-                  [ { mapKey = "prometheus.io/port", mapValue = "6060" }
+                  [ { mapKey = "prometheus.io/port", mapValue = "9121" }
                   , { mapKey = "sourcegraph.prometheus/scrape"
                     , mapValue = "true"
                     }
                   ]
                 , labels = Some
-                  [ { mapKey = "app", mapValue = "symbols" }
+                  [ { mapKey = "app", mapValue = "redis-cache" }
                   , { mapKey = "app.kubernetes.io/component"
-                    , mapValue = "symbols"
+                    , mapValue = "redis"
                     }
                   , { mapKey = "deploy", mapValue = "sourcegraph" }
                   , { mapKey = "sourcegraph-resource-requires"
                     , mapValue = "no-cluster-admin"
                     }
                   ]
-                , name = Some "symbols"
+                , name = Some "redis-cache"
                 }
               , spec = Some Kubernetes/ServiceSpec::{
                 , ports = Some
                   [ Kubernetes/ServicePort::{
-                    , name = Some "http"
-                    , port = 3184
+                    , name = Some "redis"
+                    , port = 6379
                     , targetPort = Some
                         (< Int : Natural | String : Text >.String "http")
                     }
@@ -58,14 +58,15 @@ let Service/generate
                         (< Int : Natural | String : Text >.String "debug")
                     }
                   ]
-                , selector = Some [ { mapKey = "app", mapValue = "symbols" } ]
+                , selector = Some
+                  [ { mapKey = "app", mapValue = "redis-cache" } ]
                 , type = Some "ClusterIP"
                 }
               }
 
         in  service
 
-let tc = Fixtures/symbols/service.symbols.Config
+let tc = Fixtures/redis/service.redis.Config/RedisCache
 
 let Test/namespace/none =
         assert
