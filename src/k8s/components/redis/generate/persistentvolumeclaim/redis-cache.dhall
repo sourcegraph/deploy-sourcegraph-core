@@ -13,20 +13,33 @@ let Kubernetes/ResourceRequirements =
 let Configuration/Internal/PersistentVolumeClaim =
       ../../configuration/internal/persistentvolumeclaim.dhall
 
+let deploySourcegraphLabel = { deploy = "sourcegraph" }
+
+let componentLabel = { `app.kubernetes.io/component` = "redis" }
+
+let noClusterAdminLabel = { sourcegraph-resource-requires = "no-cluster-admin" }
+
 let PersistentVolumeClaim/generate
     : ∀(c : Configuration/Internal/PersistentVolumeClaim) →
         Kubernetes/PersistentVolumeClaim.Type
     = λ(c : Configuration/Internal/PersistentVolumeClaim) →
-        Kubernetes/PersistentVolumeClaim::{
-        , metadata = Kubernetes/ObjectMeta::{ name = Some "redis-cache" }
-        , spec = Some Kubernetes/PersistentVolumeClaimSpec::{
-          , accessModes = Some [ "ReadWriteOnce" ]
-          , storageClassName = c.storageClassName
-          , resources = Some Kubernetes/ResourceRequirements::{
-            , requests = Some
-              [ { mapKey = "storage", mapValue = c.volumeSize } ]
+        let labels =
+              toMap
+                (deploySourcegraphLabel ∧ componentLabel ∧ noClusterAdminLabel)
+
+        in  Kubernetes/PersistentVolumeClaim::{
+            , metadata = Kubernetes/ObjectMeta::{
+              , name = Some "redis-cache"
+              , labels = Some labels
+              }
+            , spec = Some Kubernetes/PersistentVolumeClaimSpec::{
+              , accessModes = Some [ "ReadWriteOnce" ]
+              , storageClassName = c.storageClassName
+              , resources = Some Kubernetes/ResourceRequirements::{
+                , requests = Some
+                  [ { mapKey = "storage", mapValue = c.volumeSize } ]
+                }
+              }
             }
-          }
-        }
 
 in  PersistentVolumeClaim/generate

@@ -30,10 +30,10 @@ let ContainerConfiguration =
 let redisCacheResources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
-      with limits.cpu = Some "2"
-      with limits.memory = Some "2G"
-      with requests.cpu = Some "500m"
-      with requests.memory = Some "500M"
+      with limits.cpu = Some "1"
+      with limits.memory = Some "6Gi"
+      with requests.cpu = Some "1"
+      with requests.memory = Some "6Gi"
 
 let RedisCacheContainer =
       { Type =
@@ -54,10 +54,10 @@ let RedisCacheContainer =
 let redisExporterResources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
-      with limits.cpu = Some "2"
-      with limits.memory = Some "2G"
-      with requests.cpu = Some "500m"
-      with requests.memory = Some "500M"
+      with limits.cpu = Some "10m"
+      with limits.memory = Some "100Mi"
+      with requests.cpu = Some "10m"
+      with requests.memory = Some "100Mi"
 
 let RedisExporterContainer =
       { Type =
@@ -78,10 +78,10 @@ let RedisExporterContainer =
 let redisStoreResources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
-      with limits.cpu = Some "2"
-      with limits.memory = Some "2G"
-      with requests.cpu = Some "500m"
-      with requests.memory = Some "500M"
+      with limits.cpu = Some "1"
+      with limits.memory = Some "6Gi"
+      with requests.cpu = Some "1"
+      with requests.memory = Some "6Gi"
 
 let RedisStoreContainer =
       { Type =
