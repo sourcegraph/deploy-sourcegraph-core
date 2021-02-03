@@ -244,9 +244,11 @@ let Container/RedisStore/toInternal
 
         let securityContext = getSecurityContext cg
 
-        let envVars = environment/toList opts.environment
-
-        let envVars = Some (envVars # opts.additionalEnvVars)
+        let envVars =
+              Util/JoinOptionalList
+                Kubernetes/EnvVar.Type
+                (Some (environment/toList opts.environment))
+                (Some opts.additionalEnvVars)
 
         let simple/redis = Simple/Redis.Containers.redis-store
 

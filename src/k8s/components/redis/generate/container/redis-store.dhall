@@ -35,17 +35,21 @@ let Container/redis-store/generate
 
         let probe = k8sProbe with failureThreshold = None Natural
 
-        let livenessProbe = probe with periodSeconds = None Natural
+        let livenessProbe =
+              probe
+              with periodSeconds = None Natural
+              with timeoutSeconds = None Natural
 
         let readinessProbe
             : Kubernetes/Probe.Type
             = probe
-              with initialDelaySeconds = None Natural
+              with initialDelaySeconds = Some 5
+              with timeoutSeconds = None Natural
 
         let httpPort =
               Kubernetes/ContainerPort::{
               , containerPort = simple/redis-store.ports.redis
-              , name = Some "http"
+              , name = Some "redis"
               }
 
         let securityContext = c.securityContext
@@ -55,13 +59,7 @@ let Container/redis-store/generate
             , image = Some image
             , livenessProbe = Some livenessProbe
             , name = "redis-store"
-            , ports = Some
-              [ httpPort
-              , Kubernetes/ContainerPort::{
-                , containerPort = 6060
-                , name = Some "debug"
-                }
-              ]
+            , ports = Some [ httpPort ]
             , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"

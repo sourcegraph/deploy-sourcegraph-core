@@ -91,11 +91,7 @@ let DeploymentSpec/generate
           , matchLabels = Some (toMap appLabel)
           }
         , strategy = Some Kubernetes/DeploymentStrategy::{
-          , rollingUpdate = Some Kubernetes/RollingUpdateDeployment::{
-            , maxSurge = Some (Kubernetes/IntOrString.Int 1)
-            , maxUnavailable = Some (Kubernetes/IntOrString.Int 1)
-            }
-          , type = Some "RollingUpdate"
+          , type = Some "Recreate"
           }
         , template = Kubernetes/PodTemplateSpec::{
           , metadata = Kubernetes/ObjectMeta::{
