@@ -49,13 +49,7 @@ let Service/generate
                     , name = Some "redis"
                     , port = 6379
                     , targetPort = Some
-                        (< Int : Natural | String : Text >.String "http")
-                    }
-                  , Kubernetes/ServicePort::{
-                    , name = Some "debug"
-                    , port = 6060
-                    , targetPort = Some
-                        (< Int : Natural | String : Text >.String "debug")
+                        (< Int : Natural | String : Text >.String "redis")
                     }
                   ]
                 , selector = Some
