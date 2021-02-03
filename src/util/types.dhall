@@ -9,7 +9,7 @@ let Container = { image : Image }
 
 let EnvVar = { name : Text, value : Optional Text }
 
-let HealthCheck/Scheme = < HTTP >
+let HealthCheck/Scheme = < HTTP | TCP >
 
 let sharedFields =
       { retries : Optional Natural

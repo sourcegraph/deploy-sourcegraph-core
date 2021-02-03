@@ -35,12 +35,15 @@ let Container/redis-cache/generate
 
         let probe = k8sProbe with failureThreshold = None Natural
 
-        let livenessProbe = probe with periodSeconds = None Natural
+        let livenessProbe = probe
+               with periodSeconds = None Natural
+               with timeoutSeconds = None Natural
 
         let readinessProbe
             : Kubernetes/Probe.Type
             = probe
-              with initialDelaySeconds = None Natural
+              with initialDelaySeconds = Some 5
+              with timeoutSeconds = None Natural
 
         let httpPort =
               Kubernetes/ContainerPort::{

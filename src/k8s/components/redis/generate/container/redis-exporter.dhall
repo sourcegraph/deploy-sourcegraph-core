@@ -1,6 +1,3 @@
-let Kubernetes/Probe =
-      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Probe.dhall
-
 let Kubernetes/Container =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
@@ -31,10 +28,10 @@ let Container/redis-exporter/generate
 
         let simple/redis-exporter = Simple/Redis.Containers.redis-exporter
 
-        let httpPort =
+        let redisexpPort =
               Kubernetes/ContainerPort::{
               , containerPort = simple/redis-exporter.ports.redisexp
-              , name = Some "http"
+              , name = Some "redisexp"
               }
 
         let securityContext = c.securityContext
@@ -42,13 +39,7 @@ let Container/redis-exporter/generate
         in  Kubernetes/Container::{
             , image = Some image
             , name = "redis-exporter"
-            , ports = Some
-              [ httpPort
-              , Kubernetes/ContainerPort::{
-                , containerPort = 6060
-                , name = Some "debug"
-                }
-              ]
+            , ports = Some [ redisexpPort ]
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
             , securityContext

@@ -7,7 +7,7 @@ let Container = util.Container
 let redisCacheImage =
       Image::{
       , registry = Some "index.docker.io"
-      , name = "sourcegraph/indexed-searcher"
+      , name = "sourcegraph/redis-cache"
       , tag = "insiders"
       , digest = Some
           "7820219195ab3e8fdae5875cd690fed1b2a01fd1063bd94210c0e9d529c38e56"
@@ -16,7 +16,7 @@ let redisCacheImage =
 let redisExporterImage =
       Image::{
       , registry = Some "index.docker.io"
-      , name = "sourcegraph/indexed-searcher"
+      , name = "sourcegraph/redis_exporter"
       , tag = "84464_2021-01-15_c2e4c28"
       , digest = Some
           "f3f51453e4261734f08579fe9c812c66ee443626690091401674be4fb724da70"
@@ -25,7 +25,7 @@ let redisExporterImage =
 let redisStoreImage =
       Image::{
       , registry = Some "index.docker.io"
-      , name = "sourcegraph/indexed-searcher"
+      , name = "sourcegraph/redis-store"
       , tag = "insiders"
       , digest = Some
           "e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
@@ -43,8 +43,8 @@ let redisHealthCheck =
       util.HealthCheck.Network
         util.NetworkHealthCheck::{
         , port = redisPort
-        , scheme = util.HealthCheck/Scheme.HTTP
-        , initialDelaySeconds = Some 5
+        , scheme = util.HealthCheck/Scheme.TCP
+        , initialDelaySeconds = Some 30
         , timeoutSeconds = Some 5
         }
 

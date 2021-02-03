@@ -1,6 +1,9 @@
 let Kubernetes/SecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
 
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
 let Kubernetes/VolumeMount =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
 
@@ -26,6 +29,10 @@ let Configuration/internal/Containers/redis-exporter =
       ./internal/container/redis-exporter.dhall
 
 let util = ../../../../util/package.dhall
+
+let Util/JoinOptionalList = ../../../util/functions/join-optional-list.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
 
 let environment/toList = ./environment/toList.dhall
 
@@ -65,9 +72,11 @@ let Container/RedisCache/toInternal
 
         let securityContext = getSecurityContext cg
 
-        let envVars = environment/toList opts.environment
-
-        let envVars = Some (envVars # opts.additionalEnvVars)
+        let envVars =
+              Util/JoinOptionalList
+                Kubernetes/EnvVar.Type
+                (Some (environment/toList opts.environment))
+                (Some opts.additionalEnvVars)
 
         let simple/redis = Simple/Redis.Containers.redis-cache
 
