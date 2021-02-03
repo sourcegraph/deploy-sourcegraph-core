@@ -18,6 +18,8 @@ let Minio/shape = ./components/minio/shape.dhall
 
 let Searcher/shape = ./components/searcher/shape.dhall
 
+let Syntect-server/shape = ./components/syntect-server/shape.dhall
+
 let Jaeger/shape = ./components/jaeger/shape.dhall
 
 let IndexedSearch/shape = ./components/indexed-search/shape.dhall
@@ -34,4 +36,5 @@ in  { gitserver : Gitserver/shape
     , searcher : Searcher/shape
     , jaeger : Jaeger/shape
     , indexed-search : IndexedSearch/shape
+    , syntect-server : Syntect-server/shape
     }

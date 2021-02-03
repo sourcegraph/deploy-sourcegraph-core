@@ -17,6 +17,10 @@ let hostname = "syntect-server"
 
 let ports = { http = { number = 9238, name = Some "http" } }
 
+let cacheDir = "/mnt/cache"
+
+let volumes = { CACHE_DIR = cacheDir }
+
 let HealthCheck =
       util.HealthCheck.Network
         util.NetworkHealthCheck::{
@@ -29,7 +33,8 @@ let HealthCheck =
         }
 
 let Container/syntect-server =
-      Container::{ image } ∧ { name = hostname, hostname, ports, HealthCheck }
+        Container::{ image }
+      ∧ { name = hostname, hostname, ports, HealthCheck, volumes }
 
 let Containers = { syntect-server = Container/syntect-server }
 
