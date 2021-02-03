@@ -31,10 +31,12 @@ let Container/generate
 
         let resources = c.resources
 
+        let port = simple.ports.http
+
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple.ports.http
-              , name = Some "http"
+              , containerPort = port.number
+              , name = port.name
               }
 
         let container =

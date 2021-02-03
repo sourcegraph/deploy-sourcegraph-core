@@ -41,10 +41,12 @@ let Container/zoekt-webserver/generate
               with failureThreshold = Some 3
               with initialDelaySeconds = None Natural
 
+        let port = simple/zoekt-webserver.ports.http
+
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/zoekt-webserver.ports.http
-              , name = Some "http"
+              , containerPort = port.number
+              , name = port.name
               }
 
         let securityContext = c.securityContext

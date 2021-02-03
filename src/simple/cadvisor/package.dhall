@@ -13,7 +13,7 @@ let image =
           "da8fa91d4e06bdcd430ceb5e719f63339a5ff233471850bf16c7290cbb3630fd"
       }
 
-let httpPort = 48080
+let httpPort = { number = 48080, name = Some "http" }
 
 let volumes =
       { rootFs = { mountPath = "/rootfs", hostPath = "/" }

@@ -57,17 +57,24 @@ let toK8s
                 }
           , Network =
               λ(h : types.NetworkHealth) →
-                Kubernetes/Probe::{
-                , initialDelaySeconds = h.initialDelaySeconds
-                , periodSeconds = h.intervalSeconds
-                , timeoutSeconds = h.timeoutSeconds
-                , failureThreshold = h.retries
-                , httpGet = Some Kubernetes/HTTPGetAction::{
-                  , path = Some h.endpoint
-                  , port = Kubernetes/IntOrString.Int h.port
-                  , scheme = Some (scheme/showK8s h.scheme)
-                  }
-                }
+                let port =
+                      merge
+                        { Some = λ(p : Text) → Kubernetes/IntOrString.String p
+                        , None = Kubernetes/IntOrString.Int h.port.number
+                        }
+                        h.port.name
+
+                in  Kubernetes/Probe::{
+                    , initialDelaySeconds = h.initialDelaySeconds
+                    , periodSeconds = h.intervalSeconds
+                    , timeoutSeconds = h.timeoutSeconds
+                    , failureThreshold = h.retries
+                    , httpGet = Some Kubernetes/HTTPGetAction::{
+                      , path = Some h.endpoint
+                      , port
+                      , scheme = Some (scheme/showK8s h.scheme)
+                      }
+                    }
           }
           hc
 
@@ -103,7 +110,8 @@ let toDockerComposeNetwork
 
         let url =
               "${scheme/showDockerCompose
-                   hc.scheme}://127.0.0.1:${Natural/show hc.port}${hc.endpoint}"
+                   hc.scheme}://127.0.0.1:${Natural/show
+                                              hc.port.number}${hc.endpoint}"
 
         let test =
               DockerCompose/HealthCheck-Test.Raw

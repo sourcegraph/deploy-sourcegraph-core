@@ -1,3 +1,8 @@
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
+
 let Kubernetes/PodSecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSecurityContext.dhall
 
@@ -118,7 +123,10 @@ let StatefulSet/toInternal
               Configuration/ResourceRequirements/toK8s
                 cgContainers.grafana.resources
 
-        let environment = cgContainers.grafana.additionalEnvVars
+        let environment =
+              Util/ListToOptional
+                Kubernetes/EnvVar.Type
+                cgContainers.grafana.additionalEnvVars
 
         let containerVolumeMounts =
             -- TODO: add ConfigMap support for creating dashboards
@@ -144,7 +152,7 @@ let StatefulSet/toInternal
             , containerResources = grafanaResources
             , podSecurityContext
             , dataVolumeSize = cg.grafana.StatefulSet.dataVolumeSize
-            , envVars = Some environment
+            , envVars = environment
             , volumeMounts = Some containerVolumeMounts
             , sideCars = cg.grafana.StatefulSet.additionalSideCars
             }

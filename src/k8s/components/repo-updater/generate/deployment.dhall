@@ -82,10 +82,12 @@ let Deployment/generate
 
         let resources = config.Containers.repo-updater.resources
 
+        let port = simple/repoUpdater.ports.http
+
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/repoUpdater.ports.http
-              , name = Some "http"
+              , containerPort = port.number
+              , name = port.name
               }
 
         let deployment =

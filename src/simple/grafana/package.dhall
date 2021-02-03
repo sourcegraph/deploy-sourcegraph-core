@@ -13,7 +13,7 @@ let image =
           "a176f43202b0be8ee891452ee454515da93baee7d173ede4c9a8a5bc18d91a3d"
       }
 
-let httpPort = 3370
+let httpPort = { number = 3370, name = Some "http" }
 
 let volumes =
       { grafanaData = "/var/lib/grafana"

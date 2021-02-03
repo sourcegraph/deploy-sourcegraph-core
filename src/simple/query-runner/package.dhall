@@ -15,7 +15,7 @@ let image =
 
 let hostname = "query-runner"
 
-let ports = { http = 3183 }
+let ports = { http = { number = 3183, name = Some "http" } }
 
 let queryRunnerContainer =
       Container::{ image } ∧ { name = hostname, hostname, ports }

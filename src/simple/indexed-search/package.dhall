@@ -13,7 +13,7 @@ let webserverImage =
           "76d7e8a7453caed03412064d2f8e40dd49b9df958edd846e5a91c514b840803e"
       }
 
-let webserverHttpPort = 6070
+let webserverHttpPort = { number = 6070, name = Some "http" }
 
 let indexserverImage =
       Image::{
@@ -24,7 +24,7 @@ let indexserverImage =
           "89fa7d5eac6f9f3e8893a482650dffcea4d22be993328427679af7e3ddd08e10"
       }
 
-let indexserverHttpPort = 6072
+let indexserverHttpPort = { number = 6072, name = Some "http" }
 
 let dataDir = "/data"
 

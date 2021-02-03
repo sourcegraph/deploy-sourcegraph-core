@@ -40,11 +40,20 @@ let Service/generate
                   ∧ noClusterAdminLabel
                 )
 
+        let simple/port = Simple/Postgres.Containers.pgsql.ports.database
+
+        let targetPort =
+              merge
+                { Some = λ(p : Text) → Kubernetes/IntOrString.String p
+                , None = Kubernetes/IntOrString.Int simple/port.number
+                }
+                simple/port.name
+
         let port =
               Kubernetes/ServicePort::{
               , name = Some name
-              , port = Simple/Postgres.Containers.pgsql.ports.database
-              , targetPort = Some (Kubernetes/IntOrString.String name)
+              , port = simple/port.number
+              , targetPort = Some targetPort
               }
 
         let service =

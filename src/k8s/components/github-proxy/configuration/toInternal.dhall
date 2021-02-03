@@ -1,6 +1,12 @@
 let Kubernetes/SecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
 
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
+let Kubernetes/VolumeMount =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
+
 let Configuration/service/internal = ./internal/service.dhall
 
 let Configuration/containers/github-proxy/internal =
@@ -23,6 +29,8 @@ let Configuration/ResourceRequirements/toK8s =
       ../../../util/container-resources/toK8s.dhall
 
 let Fixtures/global = ../../../util/test-fixtures/package.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
 
 let nonRootSecurityContext =
       Kubernetes/SecurityContext::{
@@ -75,14 +83,20 @@ let Containers/github-proxy/toInternal
 
         let environment = environment/toList opts.environment
 
-        let environment = environment # opts.additionalEnvVars
+        let environment =
+              Util/ListToOptional
+                Kubernetes/EnvVar.Type
+                (environment # opts.additionalEnvVars)
 
-        let volumeMounts = Some opts.additionalVolumeMounts
+        let volumeMounts =
+              Util/ListToOptional
+                Kubernetes/VolumeMount.Type
+                opts.additionalVolumeMounts
 
         in  { image
             , resources
             , securityContext
-            , envVars = Some environment
+            , envVars = environment
             , volumeMounts
             }
 

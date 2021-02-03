@@ -13,7 +13,7 @@ let image =
           "3d7a0147396ea799284ba707765d477797518425682c9aa65faa5883a63fac4f"
       }
 
-let ports = { minio = 9000 }
+let ports = { minio = { number = 9000, name = Some "minio" } }
 
 let healthCheck =
       util.HealthCheck.Network

@@ -15,7 +15,7 @@ let image =
 
 let hostname = "github-proxy"
 
-let ports = { http = 3180 }
+let ports = { http = { number = 3180, name = Some "http" } }
 
 let githubProxyContainer =
       Container::{ image } ∧ { name = hostname, hostname, ports }

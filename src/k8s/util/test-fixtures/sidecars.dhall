@@ -12,4 +12,11 @@ let Foo =
       , name = "sidecar"
       }
 
-in  { Foo }
+let Baz =
+      Kubernetes/Container::{
+      , env = Some [ Kubernetes/EnvVar::{ name = "Baz", value = Some "BAR" } ]
+      , image = Some "index.docker.io/your/image:tag-2@sha256:123456"
+      , name = "baz-sidecar"
+      }
+
+in  { Foo, Baz }

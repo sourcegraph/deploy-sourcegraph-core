@@ -25,7 +25,7 @@ let frontendEnvironment =
 
 let frontendHostname = "sourcegraph-frontend"
 
-let httpPort = 3080
+let httpPort = { number = 3080, name = Some "http" }
 
 let healthCheck =
       util.HealthCheck.Network

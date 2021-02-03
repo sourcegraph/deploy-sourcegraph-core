@@ -13,7 +13,7 @@ let image =
           "811b345d8b06cc411c4138519652b33dbf1be3d6db2e0ed5d7a31e4d8c0ae266"
       }
 
-let httpPort = 3182
+let httpPort = { number = 3182, name = Some "http" }
 
 let healthCheck =
       util.HealthCheck.Network

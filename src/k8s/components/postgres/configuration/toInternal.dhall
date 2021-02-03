@@ -20,6 +20,11 @@ let Kubernetes/VolumeMount =
 let Kubernetes/PodSecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSecurityContext.dhall
 
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
+
 let Configuration/Internal/PersistentVolumeClaim =
       ./internal/persistentVolumeClaim.dhall
 
@@ -186,7 +191,8 @@ let Containers/pgsql/toInternal
 
         let resources = Configuration/ResourceRequirements/toK8s c.resources
 
-        let environment = c.additionalEnvVars
+        let environment =
+              Util/ListToOptional Kubernetes/EnvVar.Type c.additionalEnvVars
 
         let volumeMounts =
                 [ dataDiskVolumeMount
@@ -205,7 +211,7 @@ let Containers/pgsql/toInternal
         in  { image = pgsqlImage
             , resources
             , securityContext
-            , envVars = Some environment
+            , envVars = environment
             , volumeMounts = Some volumeMounts
             }
 

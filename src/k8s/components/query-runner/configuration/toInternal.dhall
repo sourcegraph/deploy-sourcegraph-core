@@ -1,6 +1,14 @@
 let Kubernetes/SecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
 
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
+
+let Kubernetes/VolumeMount =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
+
 let Configuration/containers/query-runner/internal =
       ./internal/container/query-runner.dhall
 
@@ -76,9 +84,15 @@ let Containers/query-runner/toInternal
               Configuration/ResourceRequirements/toK8s
                 cgContainers.query-runner.resources
 
-        let envVars = Some cgContainers.query-runner.additionalEnvVars
+        let envVars =
+              Util/ListToOptional
+                Kubernetes/EnvVar.Type
+                cgContainers.query-runner.additionalEnvVars
 
-        let volumeMounts = Some cgContainers.query-runner.additionalVolumeMounts
+        let volumeMounts =
+              Util/ListToOptional
+                Kubernetes/VolumeMount.Type
+                cgContainers.query-runner.additionalVolumeMounts
 
         let Config =
               { image = Image
