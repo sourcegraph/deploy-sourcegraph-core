@@ -22,44 +22,56 @@ let Kubernetes/IntOrString =
 let Kubernetes/PodTemplateSpec =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodTemplateSpec.dhall
 
+let Kubernetes/Volume =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
+let Kubernetes/PersistentVolumeClaimVolumeSource =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PersistentVolumeClaimVolumeSource.dhall
+
 let Kubernetes/PodSpec =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSpec.dhall
 
 let Kubernetes/PodSecurityContext =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSecurityContext.dhall
 
-let Jaeger/generate = ../../../shared/jaeger/generate.dhall
-
-let volumes/toList = ../../configuration/volumes/toList.dhall
-
 let deploySourcegraphLabel = { deploy = "sourcegraph" }
 
-let componentLabel = { `app.kubernetes.io/component` = "symbols" }
+let componentLabel = { `app.kubernetes.io/component` = "redis" }
 
 let noClusterAdminLabel = { sourcegraph-resource-requires = "no-cluster-admin" }
 
-let appLabel = { app = "symbols" }
+let appLabel = { app = "redis-store" }
 
 let Configuration/Internal/Deployment =
-      ../../configuration/internal/deployment.dhall
+      ../../configuration/internal/deployment/redis-store.dhall
 
-let Container/symbols/generate = ../container/symbols.dhall
+let Container/redis-store/generate = ../container/redis-store.dhall
+
+let Container/redis-exporter/generate = ../container/redis-exporter.dhall
 
 let Fixtures/deployment = ./fixtures.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
-let tc = Fixtures/deployment.symbols.Config
+let tc = Fixtures/deployment.redis.Config/RedisStore
 
 let PodSpec/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/PodSpec.Type
     = λ(c : Configuration/Internal/Deployment) →
-        let volumes = volumes/toList c.volumes
+        let volumes =
+              [ Kubernetes/Volume::{
+                , name = "redis-data"
+                , persistentVolumeClaim = Some Kubernetes/PersistentVolumeClaimVolumeSource::{
+                  , claimName = "redis-store"
+                  }
+                }
+              ]
 
         in  Kubernetes/PodSpec::{
             , containers =
-                  [ Container/symbols/generate c.Containers.symbols
-                  , Jaeger/generate c.Containers.jaeger
+                  [ Container/redis-store/generate c.Containers.redis-store
+                  , Container/redis-exporter/generate
+                      c.Containers.redis-exporter
                   ]
                 # c.sideCars
             , securityContext = Some Kubernetes/PodSecurityContext::{
@@ -68,44 +80,30 @@ let PodSpec/generate
             , volumes = Some volumes
             }
 
-let Test/volumes =
-        assert
-      :   (PodSpec/generate tc).volumes
-        ≡ Some Fixtures/deployment.symbols.Volumes.expected
-
 let DeploymentSpec/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/DeploymentSpec.Type
     = λ(c : Configuration/Internal/Deployment) →
-        let replicas = c.replicas
-
-        in  Kubernetes/DeploymentSpec::{
-            , minReadySeconds = Some 10
-            , replicas = Some replicas
-            , revisionHistoryLimit = Some 10
-            , selector = Kubernetes/LabelSelector::{
-              , matchLabels = Some (toMap appLabel)
-              }
-            , strategy = Some Kubernetes/DeploymentStrategy::{
-              , rollingUpdate = Some Kubernetes/RollingUpdateDeployment::{
-                , maxSurge = Some (Kubernetes/IntOrString.Int 1)
-                , maxUnavailable = Some (Kubernetes/IntOrString.Int 1)
-                }
-              , type = Some "RollingUpdate"
-              }
-            , template = Kubernetes/PodTemplateSpec::{
-              , metadata = Kubernetes/ObjectMeta::{
-                , labels = Some (toMap (appLabel ∧ deploySourcegraphLabel))
-                }
-              , spec = Some (PodSpec/generate c)
-              }
+        Kubernetes/DeploymentSpec::{
+        , minReadySeconds = Some 10
+        , replicas = Some 1
+        , revisionHistoryLimit = Some 10
+        , selector = Kubernetes/LabelSelector::{
+          , matchLabels = Some (toMap appLabel)
+          }
+        , strategy = Some Kubernetes/DeploymentStrategy::{
+          , rollingUpdate = Some Kubernetes/RollingUpdateDeployment::{
+            , maxSurge = Some (Kubernetes/IntOrString.Int 1)
+            , maxUnavailable = Some (Kubernetes/IntOrString.Int 1)
             }
-
-let Test/replicas =
-        assert
-      :   ( DeploymentSpec/generate
-              (tc with replicas = Fixtures/global.Replicas)
-          ).replicas
-        ≡ Some Fixtures/global.Replicas
+          , type = Some "RollingUpdate"
+          }
+        , template = Kubernetes/PodTemplateSpec::{
+          , metadata = Kubernetes/ObjectMeta::{
+            , labels = Some (toMap (appLabel ∧ deploySourcegraphLabel))
+            }
+          , spec = Some (PodSpec/generate c)
+          }
+        }
 
 let Deployment/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/Deployment.Type
@@ -120,9 +118,12 @@ let Deployment/generate
               Kubernetes/Deployment::{
               , metadata = Kubernetes/ObjectMeta::{
                 , annotations = Some
-                    (toMap { description = "Backend for symbols operations." })
+                    ( toMap
+                        { description = "Redis for storing semi-persistent data like user sessions."
+                        }
+                    )
                 , labels = Some deploymentLabels
-                , name = Some "symbols"
+                , name = Some "redis-store"
                 , namespace
                 }
               , spec = Some (DeploymentSpec/generate c)

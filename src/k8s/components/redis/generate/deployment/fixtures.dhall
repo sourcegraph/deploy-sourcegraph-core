@@ -1,30 +1,36 @@
 let Kubernetes/Container =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
-let Fixtures/global = ../../../../util/test-fixtures/package.dhall
-
 let Fixtures/containers = ../container/fixtures.dhall
 
-let Fixtures/jaeger =
-      ../../../shared/jaeger/configuration/internal/jaeger/fixtures.dhall
+let Configuration/Internal/Deployment/RedisCache =
+      ../../configuration/internal/deployment/redis-cache.dhall
 
-let Configuration/Internal/Deployment =
-      ../../configuration/internal/deployment.dhall
+let Configuration/Internal/Deployment/RedisStore =
+      ../../configuration/internal/deployment/redis-store.dhall
 
-let TestConfig
-    : Configuration/Internal/Deployment
+let TestConfig/RedisCache
+    : Configuration/Internal/Deployment/RedisCache
     = { Containers =
-        { symbols = Fixtures/containers.symbols.Config
-        , jaeger = Fixtures/jaeger.Config
+        { redis-cache = Fixtures/containers.redis.Config/RedisCache
+        , redis-exporter = Fixtures/containers.redis.Config/RedisExporter
         }
       , namespace = None Text
-      , replicas = 1
-      , volumes.cache-ssd = Fixtures/global.Volumes.NFS
       , sideCars = [] : List Kubernetes/Container.Type
       }
 
-in  { symbols =
-      { Config = TestConfig
-      , Volumes.expected = [ Fixtures/global.Volumes.NFS ]
+let TestConfig/RedisStore
+    : Configuration/Internal/Deployment/RedisStore
+    = { Containers =
+        { redis-store = Fixtures/containers.redis.Config/RedisStore
+        , redis-exporter = Fixtures/containers.redis.Config/RedisExporter
+        }
+      , namespace = None Text
+      , sideCars = [] : List Kubernetes/Container.Type
+      }
+
+in  { redis =
+      { Config/RedisCache = TestConfig/RedisCache
+      , Config/RedisStore = TestConfig/RedisStore
       }
     }
