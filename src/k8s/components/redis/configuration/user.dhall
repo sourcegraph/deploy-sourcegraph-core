@@ -143,17 +143,29 @@ let RedisStoreDeployment =
         }
       }
 
+let RedisPersistentVolumeClaim =
+      { Type = { volumeSize : Text }, default.volumeSize = "100Gi" }
+
 let configuration =
       { Type =
           { Deployment :
               { redis-cache : RedisCacheDeployment.Type
               , redis-store : RedisStoreDeployment.Type
               }
+          , PersistentVolumeClaim :
+              { redis-cache : RedisPersistentVolumeClaim.Type
+              , redis-store : RedisPersistentVolumeClaim.Type
+              }
           }
-      , default.Deployment
-        =
-        { redis-cache = RedisCacheDeployment.default
-        , redis-store = RedisStoreDeployment.default
+      , default =
+        { Deployment =
+          { redis-cache = RedisCacheDeployment.default
+          , redis-store = RedisStoreDeployment.default
+          }
+        , PersistentVolumeClaim =
+          { redis-cache = RedisPersistentVolumeClaim.default
+          , redis-store = RedisPersistentVolumeClaim.default
+          }
         }
       }
 

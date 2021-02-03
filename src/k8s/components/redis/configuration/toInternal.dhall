@@ -428,6 +428,16 @@ let toInternal
           { redis-cache = Service/RedisCache/toInternal cg
           , redis-store = Service/RedisStore/toInternal cg
           }
+        , PersistentVolumeClaim =
+          { redis-cache =
+            { volumeSize = cg.redis.PersistentVolumeClaim.redis-cache.volumeSize
+            , storageClassName = cg.Global.storageClassname
+            }
+          , redis-store =
+            { volumeSize = cg.redis.PersistentVolumeClaim.redis-store.volumeSize
+            , storageClassName = cg.Global.storageClassname
+            }
+          }
         }
 
 in  toInternal
