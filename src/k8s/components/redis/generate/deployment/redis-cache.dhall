@@ -13,12 +13,6 @@ let Kubernetes/LabelSelector =
 let Kubernetes/DeploymentStrategy =
       ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.DeploymentStrategy.dhall
 
-let Kubernetes/RollingUpdateDeployment =
-      ../../../../../deps/k8s/schemas/io.k8s.api.apps.v1.RollingUpdateDeployment.dhall
-
-let Kubernetes/IntOrString =
-      ../../../../../deps/k8s/types/io.k8s.apimachinery.pkg.util.intstr.IntOrString.dhall
-
 let Kubernetes/PodTemplateSpec =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodTemplateSpec.dhall
 

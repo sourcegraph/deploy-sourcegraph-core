@@ -1,1 +1,1 @@
-{storageClassName : Optional Text, volumeSize : Text}
+{ storageClassName : Optional Text, volumeSize : Text }

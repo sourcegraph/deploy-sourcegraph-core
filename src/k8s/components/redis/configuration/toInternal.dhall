@@ -32,8 +32,6 @@ let util = ../../../../util/package.dhall
 
 let Util/JoinOptionalList = ../../../util/functions/join-optional-list.dhall
 
-let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
-
 let environment/toList = ./environment/toList.dhall
 
 let Simple/Redis = ../../../../simple/redis/package.dhall

@@ -18,8 +18,6 @@ let Configuration/Internal/Container/redis-store =
 let Configuration/Internal/Container/redis-exporter =
       ../../configuration/internal/container/redis-exporter.dhall
 
-let environment/toList = ../../configuration/environment/toList.dhall
-
 let TestConfig/RedisCache
     : Configuration/Internal/Container/redis-cache
     = { securityContext = None Kubernetes/SecurityContext.Type

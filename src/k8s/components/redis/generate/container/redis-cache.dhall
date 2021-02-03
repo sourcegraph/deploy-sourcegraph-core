@@ -35,9 +35,10 @@ let Container/redis-cache/generate
 
         let probe = k8sProbe with failureThreshold = None Natural
 
-        let livenessProbe = probe
-               with periodSeconds = None Natural
-               with timeoutSeconds = None Natural
+        let livenessProbe =
+              probe
+              with periodSeconds = None Natural
+              with timeoutSeconds = None Natural
 
         let readinessProbe
             : Kubernetes/Probe.Type
@@ -58,8 +59,7 @@ let Container/redis-cache/generate
             , image = Some image
             , livenessProbe = Some livenessProbe
             , name = "redis-cache"
-            , ports = Some
-              [ httpPort]
+            , ports = Some [ httpPort ]
             , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
