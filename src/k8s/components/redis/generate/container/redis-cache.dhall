@@ -48,7 +48,7 @@ let Container/redis-cache/generate
         let httpPort =
               Kubernetes/ContainerPort::{
               , containerPort = simple/redis-cache.ports.redis
-              , name = Some "http"
+              , name = Some "redis"
               }
 
         let securityContext = c.securityContext
@@ -59,12 +59,7 @@ let Container/redis-cache/generate
             , livenessProbe = Some livenessProbe
             , name = "redis-cache"
             , ports = Some
-              [ httpPort
-              , Kubernetes/ContainerPort::{
-                , containerPort = 6060
-                , name = Some "debug"
-                }
-              ]
+              [ httpPort]
             , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
