@@ -22,6 +22,8 @@ let Jaeger/shape = ./components/jaeger/shape.dhall
 
 let IndexedSearch/shape = ./components/indexed-search/shape.dhall
 
+let Redis/shape = ./components/redis/shape.dhall
+
 in  { gitserver : Gitserver/shape
     , symbols : Symbols/shape
     , repo-updater : RepoUpdater/shape
@@ -34,4 +36,5 @@ in  { gitserver : Gitserver/shape
     , searcher : Searcher/shape
     , jaeger : Jaeger/shape
     , indexed-search : IndexedSearch/shape
+    , redis : Redis/shape
     }

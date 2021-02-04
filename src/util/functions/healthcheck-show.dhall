@@ -9,6 +9,9 @@ let Kubernetes/Probe = ../../deps/k8s/schemas/io.k8s.api.core.v1.Probe.dhall
 let Kubernetes/HTTPGetAction =
       ../../deps/k8s/schemas/io.k8s.api.core.v1.HTTPGetAction.dhall
 
+let Kubernetes/TCPSocketAction =
+      ../../deps/k8s/schemas/io.k8s.api.core.v1.TCPSocketAction.dhall
+
 let Kubernetes/IntOrString =
       ../../deps/k8s/types/io.k8s.apimachinery.pkg.util.intstr.IntOrString.dhall
 
@@ -25,7 +28,7 @@ let DockerCompose/HealthCheck-Test =
 
 let scheme/showK8s
     : ∀(s : HealthCheck/Scheme) → Text
-    = λ(s : HealthCheck/Scheme) → merge { HTTP = "HTTP" } s
+    = λ(s : HealthCheck/Scheme) → merge { HTTP = "HTTP", TCP = "TCP" } s
 
 let commandToK8s
     : ∀(c : types.Command) → Kubernetes/ExecAction.Type
@@ -42,6 +45,33 @@ let commandToK8s
           }
           c
 
+let networkHealthToK8s
+    : ∀(h : types.NetworkHealth) → Kubernetes/Probe.Type
+    = λ(h : types.NetworkHealth) →
+        merge
+          { HTTP = Kubernetes/Probe::{
+            , initialDelaySeconds = h.initialDelaySeconds
+            , periodSeconds = h.intervalSeconds
+            , timeoutSeconds = h.timeoutSeconds
+            , failureThreshold = h.retries
+            , httpGet = Some Kubernetes/HTTPGetAction::{
+              , path = Some h.endpoint
+              , port = Kubernetes/IntOrString.Int h.port
+              , scheme = Some (scheme/showK8s h.scheme)
+              }
+            }
+          , TCP = Kubernetes/Probe::{
+            , initialDelaySeconds = h.initialDelaySeconds
+            , periodSeconds = h.intervalSeconds
+            , timeoutSeconds = h.timeoutSeconds
+            , failureThreshold = h.retries
+            , tcpSocket = Some Kubernetes/TCPSocketAction::{
+              , port = Kubernetes/IntOrString.Int h.port
+              }
+            }
+          }
+          h.scheme
+
 let toK8s
     : ∀(hc : HealthCheck) → Kubernetes/Probe.Type
     = λ(hc : HealthCheck) →
@@ -55,19 +85,7 @@ let toK8s
                 , failureThreshold = h.retries
                 , exec = Some (commandToK8s h.command)
                 }
-          , Network =
-              λ(h : types.NetworkHealth) →
-                Kubernetes/Probe::{
-                , initialDelaySeconds = h.initialDelaySeconds
-                , periodSeconds = h.intervalSeconds
-                , timeoutSeconds = h.timeoutSeconds
-                , failureThreshold = h.retries
-                , httpGet = Some Kubernetes/HTTPGetAction::{
-                  , path = Some h.endpoint
-                  , port = Kubernetes/IntOrString.Int h.port
-                  , scheme = Some (scheme/showK8s h.scheme)
-                  }
-                }
+          , Network = λ(h : types.NetworkHealth) → networkHealthToK8s h
           }
           hc
 
@@ -87,7 +105,7 @@ let commandToDockerCompose
 
 let scheme/showDockerCompose
     : ∀(s : HealthCheck/Scheme) → Text
-    = λ(s : HealthCheck/Scheme) → merge { HTTP = "http" } s
+    = λ(s : HealthCheck/Scheme) → merge { HTTP = "http", TCP = "tcp" } s
 
 let toDockerComposeNetwork
     : ∀(hc : types.NetworkHealth) → DockerCompose/HealthCheck.Type
