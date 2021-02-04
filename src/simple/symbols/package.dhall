@@ -19,7 +19,7 @@ let volumes = { CACHE_DIR = cacheDir }
 
 let hostname = "symbols"
 
-let ports = { http = 3184 }
+let ports = { http = { number = 3184, name = Some "http" } }
 
 let symbolsEnvironment =
       { CACHE_DIR = { name = "CACHE_DIR", value = cacheDir } }

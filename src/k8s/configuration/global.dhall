@@ -27,6 +27,9 @@ let Redis/configuration = ../components/redis/configuration/user.dhall
 
 let Jaeger/configuration = ../components/jaeger/configuration/user.dhall
 
+let Syntect-server/configuration =
+      ../components/syntect-server/configuration/user.dhall
+
 let IndexedSearch/configuration =
       ../components/indexed-search/configuration/user.dhall
 
@@ -54,6 +57,7 @@ let configuration =
           , minio : Minio/configuration.Type
           , jaeger : Jaeger/configuration.Type
           , indexed-search : IndexedSearch/configuration.Type
+          , syntect-server : Syntect-server/configuration.Type
           , redis : Redis/configuration.Type
           }
       , default =
@@ -68,6 +72,7 @@ let configuration =
         , github-proxy = GithubProxy/configuration.default
         , gitserver = Gitserver/configuration.default
         , symbols = Symbols/configuration.default
+        , syntect-server = Syntect-server/configuration.default
         , repo-updater = RepoUpdater/configuration.default
         , grafana = Grafana/configuration.default
         , query-runner = QueryRunner/configuration.default

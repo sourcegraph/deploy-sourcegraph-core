@@ -18,6 +18,8 @@ let Minio/generate = ./components/minio/generate.dhall
 
 let Searcher/generate = ./components/searcher/generate.dhall
 
+let Syntect-server/generate = ./components/syntect-server/generate.dhall
+
 let IndexedSearch/generate = ./components/indexed-search/generate.dhall
 
 let Redis/generate = ./components/redis/generate.dhall
@@ -34,6 +36,7 @@ let generate
         { github-proxy = GithubProxy/generate c
         , gitserver = Gitserver/generate c
         , symbols = Symbols/generate c
+        , syntect-server = Syntect-server/generate c
         , repo-updater = RepoUpdater/generate c
         , grafana = Grafana/generate c
         , query-runner = QueryRunner/generate c

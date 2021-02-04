@@ -58,6 +58,8 @@ let simple/grafana =
 let generate
     : ∀(c : config) → Kubernetes/StatefulSet.Type
     = λ(c : config) →
+        let port = simple/grafana.ports.httpPort
+
         let grafanaContainer =
               Kubernetes/Container::{
               , image = Some (util.Image/show c.image)
@@ -65,8 +67,8 @@ let generate
               , name = "grafana"
               , ports = Some
                 [ Kubernetes/ContainerPort::{
-                  , containerPort = simple/grafana.ports.httpPort
-                  , name = Some "http"
+                  , containerPort = port.number
+                  , name = port.name
                   }
                 ]
               , resources = c.containerResources

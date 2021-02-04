@@ -1,3 +1,6 @@
+let Optional/map =
+      https://prelude.dhall-lang.org/v18.0.0/Optional/map.dhall sha256:501534192d988218d43261c299cc1d1e0b13d25df388937add784778ab0054fa
+
 let Kubernetes/Container =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
@@ -30,10 +33,19 @@ let Container/zoekt-indexserver/generate
         let simple/zoekt-indexserver =
               Simple/IndexedSearch.Containers.indexserver
 
+        let port = simple/zoekt-indexserver.ports.http
+
+        let portName =
+              Optional/map
+                Text
+                Text
+                (λ(name : Text) → "index-${name}")
+                port.name
+
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/zoekt-indexserver.ports.http
-              , name = Some "index-http"
+              , containerPort = port.number
+              , name = portName
               }
 
         let securityContext = c.securityContext

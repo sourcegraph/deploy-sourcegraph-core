@@ -114,10 +114,12 @@ let Container/pgsql/generate
                     }
                 )
 
+        let port = Simple/Postgres.Containers.pgsql.ports.database
+
         let pgsqlPort =
               Kubernetes/ContainerPort::{
-              , containerPort = Simple/Postgres.Containers.pgsql.ports.database
-              , name = Some "pgsql"
+              , containerPort = port.number
+              , name = port.name
               }
 
         in  Kubernetes/Container::{

@@ -46,10 +46,12 @@ let Container/redis-store/generate
               with initialDelaySeconds = Some 5
               with timeoutSeconds = None Natural
 
+        let port = simple/redis-store.ports.redis
+
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/redis-store.ports.redis
-              , name = Some "redis"
+              , containerPort = port.number
+              , name = port.name
               }
 
         let securityContext = c.securityContext

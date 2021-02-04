@@ -1,3 +1,6 @@
+let Optional/default =
+      https://prelude.dhall-lang.org/v18.0.0/Optional/default.dhall sha256:5bd665b0d6605c374b3c4a7e2e2bd3b9c1e39323d41441149ed5e30d86e889ad
+
 let Kubernetes/ObjectMeta =
       ../../../../../deps/k8s/schemas/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta.dhall
 
@@ -12,14 +15,25 @@ let Kubernetes/ServiceSpec =
 
 let Configuration/Internal/Service = ../../configuration/internal/service.dhall
 
+let Kubernetes/IntOrString =
+      ../../../../../deps/k8s/types/io.k8s.apimachinery.pkg.util.intstr.IntOrString.dhall
+
 let Fixtures/redis/service = ./fixtures.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
+
+let Simple = ../../../../../simple/redis/package.dhall
 
 let Service/generate
     : ∀(c : Configuration/Internal/Service) → Kubernetes/Service.Type
     = λ(c : Configuration/Internal/Service) →
         let namespace = c.namespace
+
+        let simple = Simple.Containers.redis-cache
+
+        let port = simple.ports.redis
+
+        let portName = Optional/default Text "redis" port.name
 
         let service =
               Kubernetes/Service::{
@@ -46,10 +60,9 @@ let Service/generate
               , spec = Some Kubernetes/ServiceSpec::{
                 , ports = Some
                   [ Kubernetes/ServicePort::{
-                    , name = Some "redis"
-                    , port = 6379
-                    , targetPort = Some
-                        (< Int : Natural | String : Text >.String "redis")
+                    , name = port.name
+                    , port = port.number
+                    , targetPort = Some (Kubernetes/IntOrString.String portName)
                     }
                   ]
                 , selector = Some

@@ -7,4 +7,10 @@ let Lights =
       , mountPath = "/your/name/should/be/in/lights"
       }
 
-in  { Lights }
+let MaybeNot =
+      Kubernetes/VolumeMount::{
+      , name = "FAKE_MAYBE_NOT"
+      , mountPath = "/perhaps/not"
+      }
+
+in  { Lights, MaybeNot }

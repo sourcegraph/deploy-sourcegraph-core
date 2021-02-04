@@ -31,9 +31,9 @@ let redisStoreImage =
           "e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
       }
 
-let redisPort = 6379
+let redisPort = { number = 6379, name = Some "redis" }
 
-let redisExporterPort = 9121
+let redisExporterPort = { number = 9121, name = Some "redisexp" }
 
 let dataDir = "/redis-data"
 

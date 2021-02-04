@@ -28,10 +28,12 @@ let Container/redis-exporter/generate
 
         let simple/redis-exporter = Simple/Redis.Containers.redis-exporter
 
+        let port = simple/redis-exporter.ports.redisexp
+
         let redisexpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/redis-exporter.ports.redisexp
-              , name = Some "redisexp"
+              , containerPort = port.number
+              , name = port.name
               }
 
         let securityContext = c.securityContext

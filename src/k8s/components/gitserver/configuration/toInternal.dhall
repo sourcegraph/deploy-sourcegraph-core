@@ -1,3 +1,8 @@
+let Kubernetes/EnvVar =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
+
 let Kubernetes/SecurityContext =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
 
@@ -25,6 +30,9 @@ let Configuration/ResourceRequirements/toK8s =
 
 let simple/gitserver =
       (../../../../simple/gitserver/package.dhall).Containers.gitserver
+
+let Optional/default =
+      https://prelude.dhall-lang.org/v18.0.0/Optional/default.dhall sha256:5bd665b0d6605c374b3c4a7e2e2bd3b9c1e39323d41441149ed5e30d86e889ad
 
 let Fixtures = ../../../util/test-fixtures/package.dhall
 
@@ -184,19 +192,24 @@ let StatefulSet/toInternal
               Configuration/ResourceRequirements/toK8s
                 cgContainers.gitserver.resources
 
+        let rpcPort = simple/gitserver.ports.rpc
+
+        let hcPort = Optional/default Text "rpc" rpcPort.name
+
         let gitServerHealthCheck =
               Kubernetes/Probe::{
               , initialDelaySeconds = Some 5
               , tcpSocket = Some
-                { port = intOrString.Int simple/gitserver.ports.rpc
-                , host = None Text
-                }
+                { port = intOrString.String hcPort, host = None Text }
               , timeoutSeconds = Some 5
               }
 
         let environment = environment/toList cgContainers.gitserver.environment
 
-        let environment = environment # cgContainers.gitserver.additionalEnvVars
+        let environment =
+              Util/ListToOptional
+                Kubernetes/EnvVar.Type
+                (environment # cgContainers.gitserver.additionalEnvVars)
 
         let reposVolumeMount =
               Kubernetes/VolumeMount::{
@@ -210,11 +223,11 @@ let StatefulSet/toInternal
 
         let gitserverContainer =
               { image = gitserverImage
-              , rpc/port = simple/gitserver.ports.rpc
+              , rpc/port = rpcPort.number
               , containerResources = gitserverResources
               , healthcheck = gitServerHealthCheck
               , securityContext
-              , envVars = Some environment
+              , envVars = environment
               , volumeMounts = Some volumeMounts
               }
 

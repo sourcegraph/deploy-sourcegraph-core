@@ -1,6 +1,9 @@
 let Kubernetes/Container =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
 
+let Kubernetes/Volume =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
 let Fixtures/containers = ../container/fixtures.dhall
@@ -19,12 +22,25 @@ let TestConfig
         }
       , namespace = None Text
       , replicas = 1
-      , volumes.cache-ssd = Fixtures/global.Volumes.NFS
       , sideCars = [] : List Kubernetes/Container.Type
+      , volumes = [] : List Kubernetes/Volume.Type
       }
 
 in  { symbols =
       { Config = TestConfig
-      , Volumes.expected = [ Fixtures/global.Volumes.NFS ]
+      , Volumes.input
+        =
+        [ Fixtures/global.Volumes.NFS, Fixtures/global.Volumes.NFS ]
+      , Volumes.expected
+        = Some
+        [ Fixtures/global.Volumes.NFS, Fixtures/global.Volumes.NFS ]
+      , Volumes.emptyExpected = None (List Kubernetes/Volume.Type)
+      , SideCars =
+        { input = [ Fixtures/global.SideCars.Baz, Fixtures/global.SideCars.Foo ]
+        , emptyInput = [] : List Kubernetes/Container.Type
+        , expected =
+          [ Fixtures/global.SideCars.Baz, Fixtures/global.SideCars.Foo ]
+        , emptyExpected = [] : List Kubernetes/Container.Type
+        }
       }
     }

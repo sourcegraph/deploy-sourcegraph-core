@@ -28,9 +28,10 @@ let Kubernetes/PodSpec =
 let Kubernetes/PodSecurityContext =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.PodSecurityContext.dhall
 
-let Jaeger/generate = ../../../shared/jaeger/generate.dhall
+let Kubernetes/Volume =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
 
-let volumes/toList = ../../configuration/volumes/toList.dhall
+let Jaeger/generate = ../../../shared/jaeger/generate.dhall
 
 let deploySourcegraphLabel = { deploy = "sourcegraph" }
 
@@ -49,12 +50,14 @@ let Fixtures/deployment = ./fixtures.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
+let Util/ListToOptional = ../../../../util/functions/list-to-optional.dhall
+
 let tc = Fixtures/deployment.symbols.Config
 
 let PodSpec/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/PodSpec.Type
     = λ(c : Configuration/Internal/Deployment) →
-        let volumes = volumes/toList c.volumes
+        let volumes = Util/ListToOptional Kubernetes/Volume.Type c.volumes
 
         in  Kubernetes/PodSpec::{
             , containers =
@@ -65,13 +68,38 @@ let PodSpec/generate
             , securityContext = Some Kubernetes/PodSecurityContext::{
               , runAsUser = Some 0
               }
-            , volumes = Some volumes
+            , volumes
             }
 
-let Test/volumes =
+let Test/volumes/none =
         assert
       :   (PodSpec/generate tc).volumes
-        ≡ Some Fixtures/deployment.symbols.Volumes.expected
+        ≡ Fixtures/deployment.symbols.Volumes.emptyExpected
+
+let Test/volumes/some =
+        assert
+      :   ( PodSpec/generate
+              (tc with volumes = Fixtures/deployment.symbols.Volumes.input)
+          ).volumes
+        ≡ Fixtures/deployment.symbols.Volumes.expected
+
+let test/baseContainers =
+      [ Container/symbols/generate tc.Containers.symbols
+      , Jaeger/generate tc.Containers.jaeger
+      ]
+
+let Test/sideCars/none =
+        assert
+      :   (PodSpec/generate tc).containers
+        ≡   test/baseContainers
+          # Fixtures/deployment.symbols.SideCars.emptyExpected
+
+let Test/sideCars/some =
+        assert
+      :   ( PodSpec/generate
+              (tc with sideCars = Fixtures/deployment.symbols.SideCars.input)
+          ).containers
+        ≡ test/baseContainers # Fixtures/deployment.symbols.SideCars.expected
 
 let DeploymentSpec/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/DeploymentSpec.Type

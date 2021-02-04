@@ -13,7 +13,7 @@ let image =
           "a55fea6638d478c2368c227d06a1a2b7a2056b693967628427d41c92d9209e97"
       }
 
-let dbPort = 5432
+let pgsqlPort = { number = 5432, name = Some "pgsql" }
 
 let dataDir = "/data"
 
@@ -30,7 +30,7 @@ let pgsqlContainer =
         Container::{ image }
       ∧ { volumes
         , name = "pgsql"
-        , ports.database = dbPort
+        , ports.database = pgsqlPort
         , HealthCheck = healthCheck
         }
       ∧ { cpus = 4.0, memory = "2g" }

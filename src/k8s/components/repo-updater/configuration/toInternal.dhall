@@ -4,6 +4,11 @@ let Kubernetes/SecurityContext =
 let Kubernetes/EnvVar =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 
+let Kubernetes/VolumeMount =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
+
+let Util/ListToOptional = ../../../util/functions/list-to-optional.dhall
+
 let Configuration/global = ../../../configuration/global.dhall
 
 let Configuration/internal = ./internal.dhall
@@ -63,15 +68,22 @@ let Containers/repoUpdater/toInternal
                 cg.repo-updater.Deployment.Containers.repo-updater.environment
 
         let envVars =
-                envVars
-              # cg.repo-updater.Deployment.Containers.repo-updater.additionalEnvVars
+              Util/ListToOptional
+                Kubernetes/EnvVar.Type
+                (   envVars
+                  # cg.repo-updater.Deployment.Containers.repo-updater.additionalEnvVars
+                )
+
+        let volumeMount =
+              Util/ListToOptional
+                Kubernetes/VolumeMount.Type
+                cg.repo-updater.Deployment.Containers.repo-updater.additionalVolumeMounts
 
         in  { image
             , resources
             , securityContext
-            , envVars = Some envVars
-            , volumeMounts = Some
-                cg.repo-updater.Deployment.Containers.repo-updater.additionalVolumeMounts
+            , envVars
+            , volumeMounts = volumeMount
             }
 
 let Test/Container/repoUpdater/Environment =

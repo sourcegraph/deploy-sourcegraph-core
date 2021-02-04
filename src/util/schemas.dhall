@@ -13,9 +13,11 @@ let sharedFields =
       , timeoutSeconds = None Natural
       }
 
+let Port = { Type = types.Port, default.name = None Text }
+
 let NetworkHealthCheck =
       { Type = types.NetworkHealth, default = { endpoint = "" } ∧ sharedFields }
 
 let ExecHealthCheck = { Type = types.ExecHealth, default = sharedFields }
 
-in  { Image, Container, EnvVar, NetworkHealthCheck, ExecHealthCheck }
+in  { Image, Container, EnvVar, NetworkHealthCheck, ExecHealthCheck, Port }

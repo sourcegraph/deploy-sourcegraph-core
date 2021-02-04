@@ -32,6 +32,8 @@ let simple/cadvisor =
 let generate
     : ∀(c : Configuration/Internal/DaemonSet) → Kubernetes/DaemonSet.Type
     = λ(c : Configuration/Internal/DaemonSet) →
+        let port = simple/cadvisor.ports.httpPort
+
         let cadvisorContainer =
               Kubernetes/Container::{
               , name = "cadvisor"
@@ -39,8 +41,8 @@ let generate
               , args = Some c.args
               , ports = Some
                 [ Kubernetes/ContainerPort::{
-                  , name = Some "http"
-                  , containerPort = simple/cadvisor.ports.httpPort
+                  , name = port.name
+                  , containerPort = port.number
                   , protocol = Some "TCP"
                   }
                 ]

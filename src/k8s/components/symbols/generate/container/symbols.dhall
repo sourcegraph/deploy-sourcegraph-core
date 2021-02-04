@@ -42,10 +42,12 @@ let Container/symbols/generate
             = probe
               with initialDelaySeconds = None Natural
 
+        let port = simple/symbols.ports.http
+
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = simple/symbols.ports.http
-              , name = Some "http"
+              , containerPort = port.number
+              , name = port.name
               }
 
         let securityContext = c.securityContext

@@ -1,6 +1,6 @@
 all: check freeze format lint build
 
-build: render-ci-pipeline render-pipelines
+build: render-ci-pipeline render-pipelines render-config-defaults
 
 render-ci-pipeline:
     ./scripts/render-ci-pipeline.sh
@@ -64,11 +64,14 @@ deploy-sourcegraph-file := "./deploy-sourcegraph.dhall"
 pipeline-file := "./src/k8s/pipeline.dhall"
 
 diff-ds:
-    dhall diff '{{deploy-sourcegraph-file}}' '{{pipeline-file}}'
+    dhall diff '({{deploy-sourcegraph-file}})' '({{pipeline-file}})'
 
 rewrite: rewrite-ds
 
 k8s-schemas-file := "./src/deps/k8s/schemas.dhall"
+
+render-config-defaults:
+    ./scripts/dhall-render-configuration-defaults.sh
 
 rewrite-ds:
     dhall rewrite-with-schemas --inplace '{{deploy-sourcegraph-file}}' --schemas '{{k8s-schemas-file}}'

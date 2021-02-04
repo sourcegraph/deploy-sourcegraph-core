@@ -18,9 +18,11 @@ let sharedFields =
       , intervalSeconds : Optional Natural
       }
 
+let Port = { number : Natural, name : Optional Text }
+
 let NetworkHealth =
         sharedFields
-      ⩓ { endpoint : Text, scheme : HealthCheck/Scheme, port : Natural }
+      ⩓ { endpoint : Text, scheme : HealthCheck/Scheme, port : Port }
 
 let Command = < Exec : List Text | Shell : List Text | Raw : Text >
 
@@ -36,4 +38,5 @@ in  { Image
     , Command
     , ExecHealth
     , NetworkHealth
+    , Port
     }

@@ -73,10 +73,12 @@ let Deployment/generate
 
         let appLabel = { app = simple.name }
 
+        let port = simple.ports.minio
+
         let ports =
               { minio = Kubernetes/ContainerPort::{
-                , containerPort = simple.ports.minio
-                , name = Some "minio"
+                , containerPort = port.number
+                , name = port.name
                 }
               }
 

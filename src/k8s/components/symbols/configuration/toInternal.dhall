@@ -26,6 +26,8 @@ let util = ../../../../util/package.dhall
 
 let environment/toList = ./environment/toList.dhall
 
+let volumes/toList = ./volumes/toList.dhall
+
 let Simple/Symbols = ../../../../simple/symbols/package.dhall
 
 let Image/manipulate = util.Image/manipulate
@@ -220,7 +222,7 @@ let Deployment/toInternal
 
         let replicas = opts.replicas
 
-        let volumes = opts.volumes
+        let volumes = volumes/toList opts.volumes # opts.additionalVolumes
 
         in  { namespace
             , replicas
@@ -268,9 +270,12 @@ let Test/Deployment/Volumes =
       :   ( Deployment/toInternal
               ( Fixtures.Config.Default
                 with symbols.Deployment.volumes = TestVolume
+                with symbols.Deployment.additionalVolumes
+                     =
+                  [ Fixtures.Volumes.Foo ]
               )
           ).volumes
-        ≡ TestVolume
+        ≡ [ Fixtures.Volumes.NFS, Fixtures.Volumes.Foo ]
 
 let Service/toInternal
     : ∀(cg : Configuration/global.Type) → Configuration/internal/service
