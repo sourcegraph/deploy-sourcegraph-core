@@ -120,7 +120,7 @@ let DeploymentSpec/generate
         , strategy = Some Kubernetes/DeploymentStrategy::{
           , rollingUpdate = Some Kubernetes/RollingUpdateDeployment::{
             , maxSurge = Some (Kubernetes/IntOrString.Int 1)
-            , maxUnavailable = Some (Kubernetes/IntOrString.Int 1)
+            , maxUnavailable = Some (Kubernetes/IntOrString.Int 0)
             }
           , type = Some "RollingUpdate"
           }
@@ -146,7 +146,8 @@ let Deployment/generate
               , metadata = Kubernetes/ObjectMeta::{
                 , annotations = Some
                     ( toMap
-                        { description = "Backend for syntect-server operations."
+                        { description =
+                            "Backend for syntax highlighting operations."
                         }
                     )
                 , labels = Some deploymentLabels

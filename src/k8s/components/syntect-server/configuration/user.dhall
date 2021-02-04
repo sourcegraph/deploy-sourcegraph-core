@@ -13,13 +13,9 @@ let Kubernetes/Container =
 let Simple/syntect-server/Containers =
       (../../../../simple/syntect-server/package.dhall).Containers
 
-let volumes = ./volumes/volumes.dhall
-
 let util = ../../../../util/package.dhall
 
 let Image = util.Image
-
-let Configuration/jaeger = ../../shared/jaeger/defaults.dhall
 
 let Configuration/ResourceRequirements =
       (../../../util/container-resources/package.dhall).Requirements
@@ -32,15 +28,15 @@ let ContainerConfiguration =
       , default = {=}
       }
 
-let syntect-serverResources
+let syntect-server/Resources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
-      with limits.cpu = Some "2"
-      with limits.memory = Some "2G"
-      with requests.cpu = Some "500m"
-      with requests.memory = Some "500M"
+      with limits.cpu = Some "4"
+      with limits.memory = Some "6G"
+      with requests.cpu = Some "250m"
+      with requests.memory = Some "2G"
 
-let syntect-serverContainer =
+let syntect-server/Container =
       { Type =
             ContainerConfiguration.Type
           ⩓ { additionalEnvVars : List Kubernetes/EnvVar.Type
@@ -48,40 +44,25 @@ let syntect-serverContainer =
             }
       , default =
         { image = Simple/syntect-server/Containers.syntect-server.image
-        , resources = syntect-serverResources
+        , resources = syntect-server/Resources
         , additionalEnvVars = [] : List Kubernetes/EnvVar.Type
         , additionalVolumeMounts = [] : List Kubernetes/VolumeMount.Type
         }
       }
 
-let JaegerContainer =
-      ContainerConfiguration
-      with default.image = Configuration/jaeger.Image
-      with default.resources = Configuration/jaeger.Resources
-
 let Containers =
-      { Type =
-          { syntect-server : syntect-serverContainer.Type
-          , jaeger : JaegerContainer.Type
-          }
-      , default =
-        { syntect-server = syntect-serverContainer.default
-        , jaeger = JaegerContainer.default
-        }
+      { Type = { syntect-server : syntect-server/Container.Type }
+      , default.syntect-server = syntect-server/Container.default
       }
 
 let Deployment =
       { Type =
-          { replicas : Natural
-          , Containers : Containers.Type
-          , volumes : volumes.Type
+          { Containers : Containers.Type
           , additionalSideCars : List Kubernetes/Container.Type
           , additionalVolumes : List Kubernetes/Volume.Type
           }
       , default =
-        { replicas = 1
-        , Containers = Containers.default
-        , volumes = volumes.default
+        { Containers = Containers.default
         , additionalSideCars = [] : List Kubernetes/Container.Type
         , additionalVolumes = [] : List Kubernetes/Volume.Type
         }

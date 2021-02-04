@@ -52,13 +52,11 @@ let Container/generate
               , name = simpleHTTPPort.name
               }
 
-        let debugPort =
-              Kubernetes/ContainerPort::{
-              , containerPort = 6060
-              , name = Some "debug"
-              }
-
-        let livenessProbe = Some (util.HealthCheck/tok8s simple.HealthCheck)
+        let livenessProbe =
+              Some
+                ( (util.HealthCheck/tok8s simple.HealthCheck)
+                  with failureThreshold = None Natural
+                )
 
         let probePortName = Optional/default Text "http" simpleHTTPPort.name
 
@@ -75,7 +73,7 @@ let Container/generate
             , name
             , env = c.envVars
             , volumeMounts = c.volumeMounts
-            , ports = Some [ httpPort, debugPort ]
+            , ports = Some [ httpPort ]
             , readinessProbe
             , livenessProbe
             , resources

@@ -33,12 +33,6 @@ let Service/generate
         let service =
               Kubernetes/Service::{
               , metadata = Kubernetes/ObjectMeta::{
-                , annotations = Some
-                  [ { mapKey = "prometheus.io/port", mapValue = "6060" }
-                  , { mapKey = "sourcegraph.prometheus/scrape"
-                    , mapValue = "true"
-                    }
-                  ]
                 , labels = Some
                   [ { mapKey = "app", mapValue = "syntect-server" }
                   , { mapKey = "app.kubernetes.io/component"

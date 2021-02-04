@@ -3,9 +3,6 @@ let Kubernetes/Container =
 
 let Fixtures/containers = ../containers/fixtures.dhall
 
-let Fixtures/jaeger =
-      ../../../shared/jaeger/configuration/internal/jaeger/fixtures.dhall
-
 let Configuration/Internal/Deployment =
       ../../configuration/internal/deployment.dhall
 
@@ -16,10 +13,7 @@ let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
 let TestConfig
     : Configuration/Internal/Deployment
-    = { Containers =
-        { syntect-server = Fixtures/containers.syntect-server.Config
-        , jaeger = Fixtures/jaeger.Config
-        }
+    = { Containers.syntect-server = Fixtures/containers.syntect-server.Config
       , namespace = None Text
       , sideCars = [] : List Kubernetes/Container.Type
       , volumes = [] : List Kubernetes/Volume.Type

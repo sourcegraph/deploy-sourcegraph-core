@@ -3,16 +3,10 @@ let Kubernetes/Container =
 
 let Container/syntect-server = ./container/syntect-server.dhall
 
-let Configuration/Internal/jaeger =
-      ../../../shared/jaeger/configuration/internal/jaeger/jaeger.dhall
-
 let Kubernetes/Volume =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
 
-let ContainerConfiguration =
-      { syntect-server : Container/syntect-server
-      , jaeger : Configuration/Internal/jaeger
-      }
+let ContainerConfiguration = { syntect-server : Container/syntect-server }
 
 let DeploymentConfiguration =
       { namespace : Optional Text
