@@ -1,6 +1,9 @@
 let Kubernetes/EnvVar =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 
+let Kubernetes/Volume =
+      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
 let Kubernetes/VolumeMount =
       ../../../../deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
 
@@ -23,8 +26,13 @@ let ContainerConfiguration =
       { Type =
           { image : Image.Type
           , resources : Configuration/ResourceRequirements.Type
+          , additionalEnvVars : List Kubernetes/EnvVar.Type
+          , additionalVolumeMounts : List Kubernetes/VolumeMount.Type
           }
-      , default = {=}
+      , default =
+        { additionalEnvVars = [] : List Kubernetes/EnvVar.Type
+        , additionalVolumeMounts = [] : List Kubernetes/VolumeMount.Type
+        }
       }
 
 let redisCacheResources
@@ -36,19 +44,13 @@ let redisCacheResources
       with requests.memory = Some "6Gi"
 
 let RedisCacheContainer =
-      { Type =
-            ContainerConfiguration.Type
-          ⩓ { environment : environment.Type
-            , additionalEnvVars : List Kubernetes/EnvVar.Type
-            , additionalVolumeMounts : List Kubernetes/VolumeMount.Type
-            }
+      { Type = ContainerConfiguration.Type ⩓ { environment : environment.Type }
       , default =
-        { environment = environment.default
-        , image = Simple/Redis/Containers.redis-cache.image
-        , resources = redisCacheResources
-        , additionalEnvVars = [] : List Kubernetes/EnvVar.Type
-        , additionalVolumeMounts = [] : List Kubernetes/VolumeMount.Type
-        }
+            ContainerConfiguration.default
+          ∧ { environment = environment.default
+            , image = Simple/Redis/Containers.redis-cache.image
+            , resources = redisCacheResources
+            }
       }
 
 let redisExporterResources
@@ -60,19 +62,13 @@ let redisExporterResources
       with requests.memory = Some "100Mi"
 
 let RedisExporterContainer =
-      { Type =
-            ContainerConfiguration.Type
-          ⩓ { environment : environment.Type
-            , additionalEnvVars : List Kubernetes/EnvVar.Type
-            , additionalVolumeMounts : List Kubernetes/VolumeMount.Type
-            }
+      { Type = ContainerConfiguration.Type ⩓ { environment : environment.Type }
       , default =
-        { environment = environment.default
-        , image = Simple/Redis/Containers.redis-exporter.image
-        , resources = redisExporterResources
-        , additionalEnvVars = [] : List Kubernetes/EnvVar.Type
-        , additionalVolumeMounts = [] : List Kubernetes/VolumeMount.Type
-        }
+            ContainerConfiguration.default
+          ∧ { environment = environment.default
+            , image = Simple/Redis/Containers.redis-exporter.image
+            , resources = redisExporterResources
+            }
       }
 
 let redisStoreResources
@@ -84,19 +80,13 @@ let redisStoreResources
       with requests.memory = Some "6Gi"
 
 let RedisStoreContainer =
-      { Type =
-            ContainerConfiguration.Type
-          ⩓ { environment : environment.Type
-            , additionalEnvVars : List Kubernetes/EnvVar.Type
-            , additionalVolumeMounts : List Kubernetes/VolumeMount.Type
-            }
+      { Type = ContainerConfiguration.Type ⩓ { environment : environment.Type }
       , default =
-        { environment = environment.default
-        , image = Simple/Redis/Containers.redis-store.image
-        , resources = redisStoreResources
-        , additionalEnvVars = [] : List Kubernetes/EnvVar.Type
-        , additionalVolumeMounts = [] : List Kubernetes/VolumeMount.Type
-        }
+            ContainerConfiguration.default
+          ∧ { environment = environment.default
+            , image = Simple/Redis/Containers.redis-store.image
+            , resources = redisStoreResources
+            }
       }
 
 let RedisCacheContainers =
@@ -121,26 +111,33 @@ let RedisStoreContainers =
         }
       }
 
-let RedisCacheDeployment =
+let DeploymentConfiguration =
       { Type =
-          { Containers : RedisCacheContainers.Type
-          , additionalSideCars : List Kubernetes/Container.Type
+          { additionalSideCars : List Kubernetes/Container.Type
+          , additionalVolumes : List Kubernetes/Volume.Type
           }
       , default =
-        { Containers = RedisCacheContainers.default
+        { additionalVolumes = [] : List Kubernetes/Volume.Type
         , additionalSideCars = [] : List Kubernetes/Container.Type
         }
       }
 
+let RedisCacheDeployment =
+      { Type =
+            DeploymentConfiguration.Type
+          ⩓ { Containers : RedisCacheContainers.Type }
+      , default =
+            DeploymentConfiguration.default
+          ∧ { Containers = RedisCacheContainers.default }
+      }
+
 let RedisStoreDeployment =
       { Type =
-          { Containers : RedisStoreContainers.Type
-          , additionalSideCars : List Kubernetes/Container.Type
-          }
+            DeploymentConfiguration.Type
+          ⩓ { Containers : RedisStoreContainers.Type }
       , default =
-        { Containers = RedisStoreContainers.default
-        , additionalSideCars = [] : List Kubernetes/Container.Type
-        }
+            DeploymentConfiguration.default
+          ∧ { Containers = RedisStoreContainers.default }
       }
 
 let RedisPersistentVolumeClaim =

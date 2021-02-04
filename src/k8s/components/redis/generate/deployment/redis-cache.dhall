@@ -47,19 +47,22 @@ let Fixtures/deployment = ./fixtures.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
-let tc = Fixtures/deployment.redis.Config/RedisCache
+let Fixtures/deployment = Fixtures/deployment.redis.redis-cache
+
+let tc = Fixtures/deployment.Config
+
+let dataVolume =
+      Kubernetes/Volume::{
+      , name = "redis-data"
+      , persistentVolumeClaim = Some Kubernetes/PersistentVolumeClaimVolumeSource::{
+        , claimName = "redis-cache"
+        }
+      }
 
 let PodSpec/generate
     : ∀(c : Configuration/Internal/Deployment) → Kubernetes/PodSpec.Type
     = λ(c : Configuration/Internal/Deployment) →
-        let volumes =
-              [ Kubernetes/Volume::{
-                , name = "redis-data"
-                , persistentVolumeClaim = Some Kubernetes/PersistentVolumeClaimVolumeSource::{
-                  , claimName = "redis-cache"
-                  }
-                }
-              ]
+        let volumes = [ dataVolume ] # c.additionalVolumes
 
         in  Kubernetes/PodSpec::{
             , containers =
@@ -120,6 +123,33 @@ let Deployment/generate
               }
 
         in  deployment
+
+let test/baseContainers =
+      [ Container/redis-cache/generate tc.Containers.redis-cache
+      , Container/redis-exporter/generate tc.Containers.redis-exporter
+      ]
+
+let Test/sideCars/none =
+        assert
+      :   (PodSpec/generate tc).containers
+        ≡ test/baseContainers # Fixtures/deployment.Sidecars.emptyExpected
+
+let Test/sideCars/some =
+        assert
+      :   ( PodSpec/generate
+              (tc with sideCars = Fixtures/deployment.Sidecars.input)
+          ).containers
+        ≡ test/baseContainers # Fixtures/deployment.Sidecars.expected
+
+let Test/volumes/none =
+      assert : (PodSpec/generate tc).volumes ≡ Some [ dataVolume ]
+
+let Test/volumes/some =
+        assert
+      :   ( PodSpec/generate
+              (tc with additionalVolumes = Fixtures/deployment.Volumes.input)
+          ).volumes
+        ≡ Some ([ dataVolume ] # Fixtures/deployment.Volumes.expected)
 
 let Test/namespace/none =
         assert
