@@ -20,7 +20,7 @@ let environment =
           }
       , default =
         { SEARCHER_CACHE_SIZE_MB = Kubernetes/EnvVar::{
-          , name = "searcher_CACHE_SIZE_MB"
+          , name = "SEARCHER_CACHE_SIZE_MB"
           , value = Some "100000"
           }
         , POD_NAME = Kubernetes/EnvVar::{
@@ -34,7 +34,7 @@ let environment =
         , CACHE_DIR = Kubernetes/EnvVar::{
           , name = "CACHE_DIR"
           , value = Some
-              "${Simple/Searcher/Environment.CACHE_DIR.value}\$(POD_NAME)"
+              "${Simple/Searcher/Environment.CACHE_DIR.value}/\$(POD_NAME)"
           }
         }
       }
