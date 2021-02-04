@@ -9,6 +9,11 @@ let Configuration/Internal/Deployment/RedisCache =
 let Configuration/Internal/Deployment/RedisStore =
       ../../configuration/internal/deployment/redis-store.dhall
 
+let Kubernetes/Volume =
+      ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.Volume.dhall
+
+let Fixtures/global = ../../../../util/test-fixtures/package.dhall
+
 let TestConfig/RedisCache
     : Configuration/Internal/Deployment/RedisCache
     = { Containers =
@@ -17,6 +22,7 @@ let TestConfig/RedisCache
         }
       , namespace = None Text
       , sideCars = [] : List Kubernetes/Container.Type
+      , additionalVolumes = [] : List Kubernetes/Volume.Type
       }
 
 let TestConfig/RedisStore
@@ -27,10 +33,28 @@ let TestConfig/RedisStore
         }
       , namespace = None Text
       , sideCars = [] : List Kubernetes/Container.Type
+      , additionalVolumes = [] : List Kubernetes/Volume.Type
+      }
+
+let shared =
+      { Volumes =
+        { input = [ Fixtures/global.Volumes.NFS, Fixtures/global.Volumes.NFS ]
+        , emptyInput = None (List Kubernetes/Volume.Type)
+        , expected =
+          [ Fixtures/global.Volumes.NFS, Fixtures/global.Volumes.NFS ]
+        , emptyExpected = None (List Kubernetes/Volume.Type)
+        }
+      , Sidecars =
+        { input = [ Fixtures/global.SideCars.Baz, Fixtures/global.SideCars.Foo ]
+        , emptyInput = [] : List Kubernetes/Container.Type
+        , expected =
+          [ Fixtures/global.SideCars.Baz, Fixtures/global.SideCars.Foo ]
+        , emptyExpected = [] : List Kubernetes/Container.Type
+        }
       }
 
 in  { redis =
-      { Config/RedisCache = TestConfig/RedisCache
-      , Config/RedisStore = TestConfig/RedisStore
+      { redis-cache = { Config = TestConfig/RedisCache } ∧ shared
+      , redis-store = { Config = TestConfig/RedisStore } ∧ shared
       }
     }

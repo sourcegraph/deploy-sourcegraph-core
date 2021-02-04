@@ -336,6 +336,7 @@ let Deployment/RedisCache/toInternal
               , redis-exporter = Container/RedisExporter/toInternal cg
               }
             , sideCars = opts.additionalSideCars
+            , additionalVolumes = opts.additionalVolumes
             }
 
 let Test/Deployment/RedisCache/Namespace/none =
@@ -368,6 +369,7 @@ let Deployment/RedisStore/toInternal
               , redis-exporter = Container/RedisExporter/toInternal cg
               }
             , sideCars = opts.additionalSideCars
+            , additionalVolumes = opts.additionalVolumes
             }
 
 let Test/Deployment/RedisStore/Namespace/none =

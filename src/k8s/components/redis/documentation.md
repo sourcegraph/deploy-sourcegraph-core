@@ -15,6 +15,7 @@
         - [resources](#resources-1)
         - [additional volume mounts](#additional-volume-mounts-1)
     - [Additional SideCar Containers](#additional-sidecar-containers)
+    - [Additional volumes](#additional-volumes)
   - [redis-store](#redis-store)
     - [Containers](#containers-1)
       - [`redis-store`](#redis-store-1)
@@ -28,6 +29,7 @@
         - [resources](#resources-3)
         - [additional volume mounts](#additional-volume-mounts-3)
     - [Additional SideCar Containers](#additional-sidecar-containers-1)
+    - [Additional volumes](#additional-volumes-1)
 
 # Deployment
 
@@ -48,13 +50,13 @@ with redis.Deployment.redis-cache.Containers.redis-cache.image = <Image>
 **Default value**:
 
 ```dhall
- Image::{
+ Sourcegraph.Util.Image::{
       , name = "sourcegraph/redis-cache"
       , registry = Some "index.docker.io"
       , digest = Some
           "abc123DEADBEEF"
       , tag = "some-tag"
-      }
+}
 ```
 
 _The default values of `digest` and `tag` will vary depending on the release in question (e.x. `tag` will be `"3.21.1"` for the `3.21` Sourcegraph release, etc.)._
@@ -65,18 +67,16 @@ _The default values of `digest` and `tag` will vary depending on the release in 
 
 **Customization snipppet**:
 
-```
-let fenv = ./src/k8s/util/functions/environment-to-k8s.dhall
-
-with redis.Deployment.redis-cache.Containers.redis-cache.additionalEnvVars = [ fenv { name = "fooKey", value = "fooValue" } ]
+```dhall
+with redis.Deployment.redis-cache.Containers.redis-cache.additionalEnvVars = [
+  Sourcegraph.Util.EnvToK8s { name = "fooKey", value = "fooValue" }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
-
-[] : (List Kubernetes/EnvVar.Type)
+[] : (List Sourcegraph.Kubernetes.EnvVar.Type)
 ```
 
 ##### resources
@@ -103,19 +103,20 @@ let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 
 ##### additional volume mounts
 
-**Customization snipppet**:
+**Customization snippet**:
 
-```
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
-with redis.Deployment.redis-cache.Containers.redis-cache.additionalVolumeMounts = [ VolumeMount :: {....} ]
+```dhall
+with redis.Deployment.redis-cache.Containers.redis-cache.additionalVolumeMounts = [
+  Sourcegraph.Kubernetes.VolumeMount::{
+    , name = "fake-volume"
+    , mountPath = "/your/name/should/be/in/lights"
+  }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
 [] : (List Kubernetes/VolumeMount.Type)
 ```
 
@@ -132,13 +133,13 @@ with redis.Deployment.redis-cache.Containers.redis-exporter.image = <Image>
 **Default value**:
 
 ```dhall
- Image::{
-      , name = "sourcegraph/redis_exporter"
-      , registry = Some "index.docker.io"
-      , digest = Some
-          "abc123DEADBEEF"
-      , tag = "some-tag"
-      }
+Sourcegraph.Util.Image::{
+  , name = "sourcegraph/redis_exporter"
+  , registry = Some "index.docker.io"
+  , digest = Some
+      "abc123DEADBEEF"
+  , tag = "some-tag"
+}
 ```
 
 _The default values of `digest` and `tag` will vary depending on the release in question (e.x. `tag` will be `"3.21.1"` for the `3.21` Sourcegraph release, etc.)._
@@ -147,20 +148,18 @@ _The default values of `digest` and `tag` will vary depending on the release in 
 
 ##### additional environment variables
 
-**Customization snipppet**:
+**Customization snippet**:
 
-```
-let fenv = ./src/k8s/util/functions/environment-to-k8s.dhall
-
-with redis.Deployment.redis-cache.Containers.redis-exporter.additionalEnvVars = [ fenv { name = "fooKey", value = "fooValue" } ]
+```dhall
+with redis.Deployment.redis-cache.Containers.redis-exporter.additionalEnvVars = [
+  Sourcegraph.Util.EnvToK8s { name = "fooKey", value = "fooValue" }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
-
-[] : (List Kubernetes/EnvVar.Type)
+[] : (List Sourcegraph.Kubernetes.EnvVar.Type)
 ```
 
 ##### resources
@@ -190,16 +189,17 @@ let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 **Customization snipppet**:
 
 ```
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
-with redis.Deployment.redis-cache.Containers.redis-cache.additionalVolumeMounts = [ VolumeMount :: {....} ]
+with redis.Deployment.redis-cache.Containers.redis-cache.additionalVolumeMounts = [
+  Sourcegraph.Kubernetes.VolumeMount::{
+    , name = "fake-volume"
+    , mountPath = "/your/name/should/be/in/lights"
+  }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
 [] : (List Kubernetes/VolumeMount.Type)
 ```
 
@@ -207,18 +207,58 @@ let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMou
 
 **Customization snipppet**:
 
-```
-let Kubernetes/Container = ./src/deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
-
-with redis.Deployment.redis-cache.additionalSideCars = [ Container :: {....} ]
+```dhall
+with redis.Deployment.redis-cache.additionalSideCars = [
+  Sourcegraph.Kubernetes.Container::{
+    , args = Some [ "bash", "-c", "echo 'hello world'" ]
+    , env = Some
+      [ Sourcegraph.Kubernetes.EnvVar::{
+        , name = "FOO"
+        , value = Some "BAR"
+        }
+      ]
+    , image = Some "index.docker.io/your/image:tag@sha256:123456"
+    , name = "sidecar"
+  }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/Container = ./src/deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
+[] : (List Sourcegraph.Kubernetes.Container.Type)
+```
 
-[] : (List Kubernetes/Container.Type)
+### Additional volumes
+
+**Customization snipppet**:
+
+```dhall
+with redis.Deployment.redis-cache.additionalVolumes = [
+  Sourcegraph.Kubernetes.Volume::{
+    ...
+  }
+]
+```
+
+**Default value**:
+
+```dhall
+[] : (List Sourcegraph.Kubernetes.Volume.Type)
+```
+
+**Example value**:
+
+```dhall
+[
+  Sourcegraph.Kubernetes.Volume::{
+    , name = "your-test-volume"
+    , nfs = Some Sourcegraph.Kubernetes.NFSVolumeSource::{
+      , path = "TEST_PATH"
+      , server = "my.testing.server.io"
+      }
+  }
+]
 ```
 
 ## redis-store
@@ -238,13 +278,13 @@ with redis.Deployment.redis-store.Containers.redis-store.image = <Image>
 **Default value**:
 
 ```dhall
- Image::{
-      , name = "sourcegraph/redis-store"
-      , registry = Some "index.docker.io"
-      , digest = Some
-          "abc123DEADBEEF"
-      , tag = "some-tag"
-      }
+ Sourcegraph.Util.Image::{
+  , name = "sourcegraph/redis-store"
+  , registry = Some "index.docker.io"
+  , digest = Some
+      "abc123DEADBEEF"
+  , tag = "some-tag"
+}
 ```
 
 _The default values of `digest` and `tag` will vary depending on the release in question (e.x. `tag` will be `"3.21.1"` for the `3.21` Sourcegraph release, etc.)._
@@ -255,18 +295,16 @@ _The default values of `digest` and `tag` will vary depending on the release in 
 
 **Customization snipppet**:
 
-```
-let fenv = ./src/k8s/util/functions/environment-to-k8s.dhall
-
-with redis.Deployment.redis-store.Containers.redis-store.additionalEnvVars = [ fenv { name = "fooKey", value = "fooValue" } ]
+```dhall
+with redis.Deployment.redis-store.Containers.redis-store.additionalEnvVars = [
+ Sourcegraph.Util.EnvToK8s { name = "fooKey", value = "fooValue" }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
-
-[] : (List Kubernetes/EnvVar.Type)
+[] : (List Sourcegraph.Kubernetes.EnvVar.Type)
 ```
 
 ##### resources
@@ -296,16 +334,16 @@ let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 **Customization snipppet**:
 
 ```
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
-with redis.Deployment.redis-store.Containers.redis-store.additionalVolumeMounts = [ VolumeMount :: {....} ]
+with redis.Deployment.redis-store.Containers.redis-store.additionalVolumeMounts = [
+  Sourcegraph.Kubernetes.VolumeMount::{
+  ...
+  }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
 [] : (List Kubernetes/VolumeMount.Type)
 ```
 
@@ -322,13 +360,13 @@ with redis.Deployment.redis-store.Containers.redis-exporter.image = <Image>
 **Default value**:
 
 ```dhall
- Image::{
-      , name = "sourcegraph/redis_exporter"
-      , registry = Some "index.docker.io"
-      , digest = Some
-          "abc123DEADBEEF"
-      , tag = "some-tag"
-      }
+Sourcegraph.Util.Image::{
+  , name = "sourcegraph/redis_exporter"
+  , registry = Some "index.docker.io"
+  , digest = Some
+      "abc123DEADBEEF"
+  , tag = "some-tag"
+}
 ```
 
 _The default values of `digest` and `tag` will vary depending on the release in question (e.x. `tag` will be `"3.21.1"` for the `3.21` Sourcegraph release, etc.)._
@@ -340,16 +378,14 @@ _The default values of `digest` and `tag` will vary depending on the release in 
 **Customization snipppet**:
 
 ```
-let fenv = ./src/k8s/util/functions/environment-to-k8s.dhall
-
-with redis.Deployment.redis-store.Containers.redis-exporter.additionalEnvVars = [ fenv { name = "fooKey", value = "fooValue" } ]
+with redis.Deployment.redis-store.Containers.redis-exporter.additionalEnvVars = [
+  Sourcegraph.Util.EnvToK8s { name = "fooKey", value = "fooValue" }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
-
 [] : (List Kubernetes/EnvVar.Type)
 ```
 
@@ -379,10 +415,13 @@ let Kubernetes/EnvVar = ./src/deps/k8s/schemas/io.k8s.api.core.v1.EnvVar.dhall
 
 **Customization snipppet**:
 
-```
-let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMount.dhall
-
-with redis.Deployment.redis-store.Containers.redis-store.additionalVolumeMounts = [ VolumeMount :: {....} ]
+```dhall
+with redis.Deployment.redis-store.Containers.redis-store.additionalVolumeMounts = [
+  Sourcegraph.Kubernetes.VolumeMount::{
+    , name = "fake-volume"
+    , mountPath = "/your/name/should/be/in/lights"
+  }
+]
 ```
 
 **Default value**:
@@ -397,16 +436,56 @@ let Kubernetes/VolumeMount = ./src/deps/k8s/schemas/io.k8s.api.core.v1.VolumeMou
 
 **Customization snipppet**:
 
-```
-let Kubernetes/Container = ./src/deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
-
-with redis.Deployment.redis-store.additionalSideCars = [ Container :: {....} ]
+```dhall
+with redis.Deployment.redis-store.additionalSideCars = [
+  Sourcegraph.Kubernetes.Container::{
+    , args = Some [ "bash", "-c", "echo 'hello world'" ]
+    , env = Some
+      [ Sourcegraph.Kubernetes.EnvVar::{
+        , name = "FOO"
+        , value = Some "BAR"
+        }
+      ]
+    , image = Some "index.docker.io/your/image:tag@sha256:123456"
+    , name = "sidecar"
+  }
+]
 ```
 
 **Default value**:
 
 ```dhall
-let Kubernetes/Container = ./src/deps/k8s/schemas/io.k8s.api.core.v1.Container.dhall
+[] : (List Sourcegraph.Kubernetes.Container.Type)
+```
 
-[] : (List Kubernetes/Container.Type)
+### Additional volumes
+
+**Customization snipppet**:
+
+```dhall
+with redis.Deployment.redis-store.additionalVolumes = [
+  Sourcegraph.Kubernetes.Volume::{
+    ...
+  }
+]
+```
+
+**Default value**:
+
+```dhall
+[] : (List Sourcegraph.Kubernetes.Volume.Type)
+```
+
+**Example value**:
+
+```dhall
+[
+  Sourcegraph.Kubernetes.Volume::{
+    , name = "your-test-volume"
+    , nfs = Some Sourcegraph.Kubernetes.NFSVolumeSource::{
+      , path = "TEST_PATH"
+      , server = "my.testing.server.io"
+      }
+  }
+]
 ```
