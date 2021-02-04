@@ -22,6 +22,8 @@ let Syntect-server/generate = ./components/syntect-server/generate.dhall
 
 let IndexedSearch/generate = ./components/indexed-search/generate.dhall
 
+let Redis/generate = ./components/redis/generate.dhall
+
 let Shape = ./shape.dhall
 
 let Jaeger/generate = ./components/jaeger/generate.dhall
@@ -44,6 +46,7 @@ let generate
         , searcher = Searcher/generate c
         , jaeger = Jaeger/generate c
         , indexed-search = IndexedSearch/generate c
+        , redis = Redis/generate c
         }
 
 in  generate

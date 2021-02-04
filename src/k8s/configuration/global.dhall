@@ -23,6 +23,8 @@ let Searcher/configuration = ../components/searcher/configuration/user.dhall
 
 let Minio/configuration = ../components/minio/configuration/user.dhall
 
+let Redis/configuration = ../components/redis/configuration/user.dhall
+
 let Jaeger/configuration = ../components/jaeger/configuration/user.dhall
 
 let Syntect-server/configuration =
@@ -56,6 +58,7 @@ let configuration =
           , jaeger : Jaeger/configuration.Type
           , indexed-search : IndexedSearch/configuration.Type
           , syntect-server : Syntect-server/configuration.Type
+          , redis : Redis/configuration.Type
           }
       , default =
         { Global =
@@ -78,6 +81,7 @@ let configuration =
         , minio = Minio/configuration.default
         , jaeger = Jaeger/configuration.default
         , indexed-search = IndexedSearch/configuration.default
+        , redis = Redis/configuration.default
         }
       }
 
