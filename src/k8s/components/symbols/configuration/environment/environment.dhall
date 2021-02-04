@@ -21,7 +21,7 @@ let environment =
         { CACHE_DIR = Kubernetes/EnvVar::{
           , name = "CACHE_DIR"
           , value = Some
-              "${Simple/Symbols/Environment.CACHE_DIR.value}\$(POD_NAME)"
+              "${Simple/Symbols/Environment.CACHE_DIR.value}/\$(POD_NAME)"
           }
         , POD_NAME = Kubernetes/EnvVar::{
           , name = "POD_NAME"
