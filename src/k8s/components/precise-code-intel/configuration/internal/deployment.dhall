@@ -7,10 +7,10 @@ let Container/PreciseCodeIntelWorker =
 let Containers =
       { precise-code-intel-worker : Container/PreciseCodeIntelWorker }
 
-let Configuration =
+let DeploymentConfiguration =
       { namespace : Optional Text
       , Containers : Containers
       , sideCars : List Kubernetes/Container.Type
       }
 
-in  Configuration
+in  DeploymentConfiguration

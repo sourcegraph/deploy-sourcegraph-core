@@ -9,8 +9,8 @@ let Kubernetes/ObjectFieldSelector =
 
 let environment =
       { Type =
-          { NUM_WORKERS : Kubernetes/EnvVar.Type
-          , POD_NAME : Kubernetes/EnvVar.Type
+          { POD_NAME : Kubernetes/EnvVar.Type
+          , NUM_WORKERS : Kubernetes/EnvVar.Type
           }
       , default.NUM_WORKERS
         = Kubernetes/EnvVar::{ name = "NUM_WORKERS", value = Some "4" }
