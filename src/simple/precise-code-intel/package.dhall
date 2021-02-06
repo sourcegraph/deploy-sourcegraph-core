@@ -23,7 +23,7 @@ let healthCheck =
       util.HealthCheck.Network
         util.NetworkHealthCheck::{
         , endpoint = "/healthz"
-        , port = ports.http
+        , port = { number = ports.http, name = Some "http" }
         , scheme = util.HealthCheck/Scheme.HTTP
         , initialDelaySeconds = Some 60
         , retries = Some 3
