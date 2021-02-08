@@ -10,6 +10,8 @@ let Configuration/internal = ./internal.dhall
 
 let Configuration/internal/deployment = ./internal/deployment.dhall
 
+let Configuration/internal/Environment = ./environment/environment.dhall
+
 let Configuration/internal/service/sourcegraph-frontend =
       ./internal/service/sourcegraph-frontend.dhall
 
@@ -81,6 +83,37 @@ let Container/Frontend/toInternal
         let volumeMounts = Some ([ cacheVolume ] # opts.additionalVolumeMounts)
 
         in  { image, resources, securityContext, envVars, volumeMounts }
+
+let TestEnvironment
+    : Configuration/internal/Environment.Type
+    = { -- Note: I did it this way to make this test robust against adding/changing environment variables in the future.
+        SRC_GIT_SERVERS = Fixtures.Environment.Secret
+      , POD_NAME = Fixtures.Environment.Secret
+      , CACHE_DIR = Fixtures.Environment.Secret
+      , GRAFANA_SERVER_URL = Fixtures.Environment.Secret
+      , JAEGER_SERVER_URL = Fixtures.Environment.Secret
+      , PROMETHEUS_URL = Fixtures.Environment.Secret
+      , PGDATABASE = Fixtures.Environment.Secret
+      , PGHOST = Fixtures.Environment.Secret
+      , PGPORT = Fixtures.Environment.Secret
+      , PGSSLMODE = Fixtures.Environment.Secret
+      , PGUSER = Fixtures.Environment.Secret
+      , CODEINTEL_PGDATABASE = Fixtures.Environment.Secret
+      , CODEINTEL_PGHOST = Fixtures.Environment.Secret
+      , CODEINTEL_PGPORT = Fixtures.Environment.Secret
+      , CODEINTEL_PGSSLMODE = Fixtures.Environment.Secret
+      , CODEINTEL_PGUSER = Fixtures.Environment.Secret
+      }
+
+let Test/Container/Frontend/Environment =
+        assert
+      :   ( Container/Frontend/toInternal
+              ( Fixtures.Config.Default
+                with frontend.Deployment.Containers.frontend.environment
+                     = TestEnvironment
+              )
+          ).envVars
+        ≡ Some (environment/toList TestEnvironment)
 
 let Test/Container/Frontend/Image =
         assert
