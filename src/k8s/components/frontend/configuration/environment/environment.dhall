@@ -73,7 +73,6 @@ let environment =
             , CACHE_DIR : Kubernetes/EnvVar.Type
             , GRAFANA_SERVER_URL : Kubernetes/EnvVar.Type
             , JAEGER_SERVER_URL : Kubernetes/EnvVar.Type
-            , PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL : Kubernetes/EnvVar.Type
             , PROMETHEUS_URL : Kubernetes/EnvVar.Type
             }
           ⩓ postgresEnv.Type

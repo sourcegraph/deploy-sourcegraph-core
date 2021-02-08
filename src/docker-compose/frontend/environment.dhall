@@ -21,7 +21,6 @@ let environment =
           , SYMBOLS_URL : EnvVar.Type
           , INDEXED_SEARCH_SERVERS : EnvVar.Type
           , REPO_UPDATER_URL : EnvVar.Type
-          , PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL : EnvVar.Type
           , GRAFANA_SERVER_URL : EnvVar.Type
           , JAEGER_SERVER_URL : EnvVar.Type
           , GITHUB_BASE_URL : EnvVar.Type
@@ -65,10 +64,6 @@ let environment =
         , REPO_UPDATER_URL = EnvVar::{
           , name = "REPO_UPDATER_URL"
           , value = Some "http://repo-updater:3182"
-          }
-        , PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL = EnvVar::{
-          , name = "PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL"
-          , value = Some "http://precise-code-intel-bundle-manager:3187"
           }
         , GRAFANA_SERVER_URL = EnvVar::{
           , name = "GRAFANA_SERVER_URL"

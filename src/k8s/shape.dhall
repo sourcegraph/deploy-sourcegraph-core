@@ -26,6 +26,8 @@ let IndexedSearch/shape = ./components/indexed-search/shape.dhall
 
 let Redis/shape = ./components/redis/shape.dhall
 
+let Frontend/shape = ./components/frontend/shape.dhall
+
 in  { gitserver : Gitserver/shape
     , symbols : Symbols/shape
     , repo-updater : RepoUpdater/shape
@@ -40,4 +42,5 @@ in  { gitserver : Gitserver/shape
     , indexed-search : IndexedSearch/shape
     , syntect-server : Syntect-server/shape
     , redis : Redis/shape
+    , frontend : Frontend/shape
     }

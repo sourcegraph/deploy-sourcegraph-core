@@ -65,12 +65,12 @@ let JaegerContainer =
 
 let Containers =
       { Type =
-          { frontemd : FrontendContainer.Type
-          , jaeger-agent : JaegerContainer.Type
+          { frontend : FrontendContainer.Type
+          , jaeger : JaegerContainer.Type
           }
       , default =
-        { frontemd = FrontendContainer.default
-        , jaeger-agent = JaegerContainer.default
+        { frontend = FrontendContainer.default
+        , jaeger = JaegerContainer.default
         }
       }
 

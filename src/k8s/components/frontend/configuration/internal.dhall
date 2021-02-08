@@ -1,23 +1,20 @@
-let Kubernetes/SecurityContext =
-      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
+let Configuration/Internal/Service/sourcegraph-frontend =
+      ./internal/service/sourcegraph-frontend.dhall
 
-let sharedConfiguration = ../../shared/shared.dhall
+let Configuration/Internal/Service/sourcegraph-frontend-internal =
+      ./internal/service/sourcegraph-frontend-internal.dhall
 
-let environment = ./environment/environment.dhall
+let Configuration/Internal/Deployment = ./internal/deployment.dhall
 
-let ContainerConfiguration =
-        { securityContext : Optional Kubernetes/SecurityContext.Type }
-      ⩓ sharedConfiguration.ContainerConfiguration.Type
-
-let FrontendContainer =
-      ContainerConfiguration ⩓ { Environment : environment.Type }
-
-let JaegerContainer = ContainerConfiguration
-
-let Containers = { frontend : FrontendContainer, jaeger : JaegerContainer }
-
-let Deployment = { Containers : Containers }
-
-let configuration = { namespace : Optional Text, Deployment : Deployment }
+let configuration =
+      { Deployment :
+          { sourcegraph-frontend : Configuration/Internal/Deployment }
+      , Service :
+          { sourcegraph-frontend :
+              Configuration/Internal/Service/sourcegraph-frontend
+          , sourcegraph-frontend-internal :
+              Configuration/Internal/Service/sourcegraph-frontend-internal
+          }
+      }
 
 in  configuration
