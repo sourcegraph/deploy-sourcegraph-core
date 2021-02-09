@@ -6,6 +6,8 @@ let shfmt = ./jobs/shfmt.dhall
 
 let checkPipeline = ./jobs/check-rendered-pipeline-up-to-date.dhall
 
+let checkImages = ./jobs/check-images-up-to-date.dhall
+
 let dhallFormat = ./jobs/dhall-format.dhall
 
 let dhallLint = ./jobs/dhall-lint.dhall
@@ -24,6 +26,7 @@ in  GitHubActions.Workflow::{
         , shfmt
         , dhallFormat
         , dhallLint
+        , checkImages
         , dhallCheck
         , dhallFreeze
         , checkPipeline

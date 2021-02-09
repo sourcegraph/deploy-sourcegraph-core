@@ -27,6 +27,9 @@ let Redis/configuration = ../components/redis/configuration/user.dhall
 
 let Jaeger/configuration = ../components/jaeger/configuration/user.dhall
 
+let Codeintel-db/configuration =
+      ../components/codeintel-db/configuration/user.dhall
+
 let Syntect-server/configuration =
       ../components/syntect-server/configuration/user.dhall
 
@@ -58,6 +61,7 @@ let configuration =
           , jaeger : Jaeger/configuration.Type
           , indexed-search : IndexedSearch/configuration.Type
           , syntect-server : Syntect-server/configuration.Type
+          , codeintel-db : Codeintel-db/configuration.Type
           , redis : Redis/configuration.Type
           }
       , default =
@@ -82,6 +86,7 @@ let configuration =
         , jaeger = Jaeger/configuration.default
         , indexed-search = IndexedSearch/configuration.default
         , redis = Redis/configuration.default
+        , codeintel-db = Codeintel-db/configuration.default
         }
       }
 

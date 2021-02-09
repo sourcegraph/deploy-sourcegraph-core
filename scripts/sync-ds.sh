@@ -24,3 +24,6 @@ git checkout "$deploy_sourcegraph_commit"
 
 cd "$DIR"
 ds-to-dhall ds2dhall -i kustomization.yaml -x k8sTypesUnion.dhall -o deploy-sourcegraph.dhall -u "$DIR"/src/deps/k8s "$SCRATCH_DIR"/deploy-sourcegraph/base
+IMAGE_FILE="${DIR}/src/simple/images.dhall"
+ds-to-dhall dockerimg "$SCRATCH_DIR"/deploy-sourcegraph/base >"${IMAGE_FILE}"
+dhall format --inplace "${IMAGE_FILE}"

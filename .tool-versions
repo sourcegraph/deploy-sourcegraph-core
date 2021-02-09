@@ -5,5 +5,5 @@ fd 8.2.1
 nodejs 14.7.0
 yarn 1.22.5
 just 0.7.2
-ds-to-dhall 0.26.0
+ds-to-dhall 0.29.0
 github-markdown-toc 1.0.0
