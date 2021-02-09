@@ -4,14 +4,9 @@ let Image = util.Image
 
 let Container = util.Container
 
-let image =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/precise-code-intel-worker"
-      , tag = "insiders"
-      , digest = Some
-          "fffa377c6576e6dba8a0b3160391a04999d103ca054fd8ef48558547badcbe5c"
-      }
+let Simple/images = ../images.dhall
+
+let image = Simple/images.sourcegraph/precise-code-intel-worker
 
 let hostname = "precise-code-intel-worker"
 
