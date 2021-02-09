@@ -21,8 +21,22 @@ let TestConfig
       , image = Fixtures.Image.Base
       , envVars = Some
           ( environment/toList
-              { CACHE_DIR = Fixtures.Environment.Secret
+              { SRC_GIT_SERVERS = Fixtures.Environment.Secret
               , POD_NAME = Fixtures.Environment.Secret
+              , CACHE_DIR = Fixtures.Environment.Secret
+              , GRAFANA_SERVER_URL = Fixtures.Environment.Secret
+              , JAEGER_SERVER_URL = Fixtures.Environment.Secret
+              , PROMETHEUS_URL = Fixtures.Environment.Secret
+              , PGDATABASE = Fixtures.Environment.Secret
+              , PGHOST = Fixtures.Environment.Secret
+              , PGPORT = Fixtures.Environment.Secret
+              , PGSSLMODE = Fixtures.Environment.Secret
+              , PGUSER = Fixtures.Environment.Secret
+              , CODEINTEL_PGDATABASE = Fixtures.Environment.Secret
+              , CODEINTEL_PGHOST = Fixtures.Environment.Secret
+              , CODEINTEL_PGPORT = Fixtures.Environment.Secret
+              , CODEINTEL_PGSSLMODE = Fixtures.Environment.Secret
+              , CODEINTEL_PGUSER = Fixtures.Environment.Secret
               }
           )
       , volumeMounts = None (List Kubernetes/VolumeMount.Type)
@@ -33,6 +47,19 @@ in  { frontend =
       , Environment.expected
         =
         [ Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
+        , Fixtures.Environment.Secret
         , Fixtures.Environment.Secret
         , Fixtures.Environment.Secret
         ]

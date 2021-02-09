@@ -10,28 +10,28 @@ let Kubernetes/ContainerPort =
 let Kubernetes/ResourceRequirements =
       ../../../../../deps/k8s/schemas/io.k8s.api.core.v1.ResourceRequirements.dhall
 
-let Simple/Symbols = ../../../../../simple/symbols/package.dhall
+let Simple/Frontend = ../../../../../simple/frontend/package.dhall
 
 let util = ../../../../../util/package.dhall
 
 let Fixtures/global = ../../../../util/test-fixtures/package.dhall
 
-let Configuration/Internal/Container/symbols =
-      ../../configuration/internal/container/symbols.dhall
+let Configuration/Internal/Container/frontend =
+      ../../configuration/internal/container/frontend.dhall
 
-let Fixtures/Container/symbols = (./fixtures.dhall).symbols
+let Fixtures/Container/frontend = (./fixtures.dhall).frontend
 
-let Container/symbols/generate
-    : ∀(c : Configuration/Internal/Container/symbols) →
+let Container/frontend/generate
+    : ∀(c : Configuration/Internal/Container/frontend) →
         Kubernetes/Container.Type
-    = λ(c : Configuration/Internal/Container/symbols) →
+    = λ(c : Configuration/Internal/Container/frontend) →
         let image = util.Image/show c.image
 
         let resources = c.resources
 
-        let simple/symbols = Simple/Symbols.Containers.symbols
+        let simple/frontend = Simple/Frontend.Containers.frontend
 
-        let k8sProbe = util.HealthCheck/tok8s simple/symbols.healthCheck
+        let k8sProbe = util.HealthCheck/tok8s simple/frontend.HealthCheck
 
         let probe = k8sProbe with failureThreshold = None Natural
 
@@ -42,7 +42,7 @@ let Container/symbols/generate
             = probe
               with initialDelaySeconds = None Natural
 
-        let port = simple/symbols.ports.http
+        let port = simple/frontend.ports.http
 
         let httpPort =
               Kubernetes/ContainerPort::{
@@ -56,7 +56,7 @@ let Container/symbols/generate
             , env = c.envVars
             , image = Some image
             , livenessProbe = Some livenessProbe
-            , name = "symbols"
+            , name = "frontend"
             , ports = Some
               [ httpPort
               , Kubernetes/ContainerPort::{
@@ -71,35 +71,35 @@ let Container/symbols/generate
             , volumeMounts = c.volumeMounts
             }
 
-let tc = Fixtures/Container/symbols.Config
+let tc = Fixtures/Container/frontend.Config
 
 let Test/image/show =
         assert
-      :   (Container/symbols/generate tc).image
+      :   (Container/frontend/generate tc).image
         ≡ Some Fixtures/global.Image.BaseShow
 
 let Test/environment =
         assert
-      :   (Container/symbols/generate tc).env
-        ≡ Some Fixtures/Container/symbols.Environment.expected
+      :   (Container/frontend/generate tc).env
+        ≡ Some Fixtures/Container/frontend.Environment.expected
 
 let Test/resources/some =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/frontend/generate
               (tc with resources = Fixtures/global.Resources.Expected)
           ).resources
         ≡ Fixtures/global.Resources.Expected
 
 let Test/resources/none =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/frontend/generate
               (tc with resources = None Kubernetes/ResourceRequirements.Type)
           ).resources
         ≡ Fixtures/global.Resources.EmptyExpected
 
 let Test/securityContext/some =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/frontend/generate
               ( tc
                 with securityContext = Fixtures/global.SecurityContext.SELinux
               )
@@ -108,9 +108,9 @@ let Test/securityContext/some =
 
 let Test/securityContext/none =
         assert
-      :   ( Container/symbols/generate
+      :   ( Container/frontend/generate
               (tc with securityContext = Fixtures/global.SecurityContext.Empty)
           ).securityContext
         ≡ Fixtures/global.SecurityContext.Empty
 
-in  Container/symbols/generate
+in  Container/frontend/generate
