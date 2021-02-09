@@ -51,8 +51,14 @@ let Containers/preciseCodeIntelWorker/generate
 
         let httpPort =
               Kubernetes/ContainerPort::{
-              , containerPort = ports.http
-              , name = Some "http"
+              , containerPort = ports.http.number
+              , name = ports.http.name
+              }
+
+        let debugPort =
+              Kubernetes/ContainerPort::{
+              , containerPort = ports.debug.number
+              , name = ports.debug.name
               }
 
         in  Kubernetes/Container::{
@@ -60,13 +66,7 @@ let Containers/preciseCodeIntelWorker/generate
             , image = Some image
             , livenessProbe = Some livenessProbe
             , name = "precise-code-intel-worker"
-            , ports = Some
-              [ httpPort
-              , Kubernetes/ContainerPort::{
-                , containerPort = 6060
-                , name = Some "debug"
-                }
-              ]
+            , ports = Some [ httpPort, debugPort ]
             , readinessProbe = Some readinessProbe
             , resources
             , terminationMessagePolicy = Some "FallbackToLogsOnError"

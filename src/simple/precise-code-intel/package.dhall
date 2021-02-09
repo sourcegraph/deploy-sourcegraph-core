@@ -1,7 +1,5 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
-
 let Container = util.Container
 
 let Simple/images = ../images.dhall
@@ -10,7 +8,10 @@ let image = Simple/images.sourcegraph/precise-code-intel-worker
 
 let hostname = "precise-code-intel-worker"
 
-let ports = { http = 3188, debug = 6060 }
+let ports =
+      { http = { number = 3188, name = Some "http" }
+      , debug = { number = 6060, name = Some "debug" }
+      }
 
 let preciseCodeIntelWorkerEnv = { NUM_WORKERS = "4" }
 
@@ -18,7 +19,7 @@ let healthCheck =
       util.HealthCheck.Network
         util.NetworkHealthCheck::{
         , endpoint = "/healthz"
-        , port = { number = ports.http, name = Some "http" }
+        , port = ports.http
         , scheme = util.HealthCheck/Scheme.HTTP
         , initialDelaySeconds = Some 60
         , retries = Some 3
