@@ -24,6 +24,8 @@ let Jaeger/shape = ./components/jaeger/shape.dhall
 
 let IndexedSearch/shape = ./components/indexed-search/shape.dhall
 
+let CodeIntel-db/shape = ./components/codeintel-db/shape.dhall
+
 let Redis/shape = ./components/redis/shape.dhall
 
 in  { gitserver : Gitserver/shape
@@ -40,4 +42,5 @@ in  { gitserver : Gitserver/shape
     , indexed-search : IndexedSearch/shape
     , syntect-server : Syntect-server/shape
     , redis : Redis/shape
+    , codeintel-db : CodeIntel-db/shape
     }

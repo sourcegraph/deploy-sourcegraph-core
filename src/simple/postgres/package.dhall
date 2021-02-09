@@ -1,17 +1,10 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
-
 let Container = util.Container
 
-let image =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/postgres-11.4"
-      , tag = "insiders"
-      , digest = Some
-          "a55fea6638d478c2368c227d06a1a2b7a2056b693967628427d41c92d9209e97"
-      }
+let Simple/images = ../images.dhall
+
+let image = Simple/images.`sourcegraph/postgres-11.4`
 
 let pgsqlPort = { number = 5432, name = Some "pgsql" }
 

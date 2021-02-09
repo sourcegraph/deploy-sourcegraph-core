@@ -18,9 +18,12 @@ trap cleanup EXIT
 deploy_sourcegraph_commit=${SYNC_DEPLOY_SOURCEGRAPH_COMMIT:-master}
 
 cd "${SCRATCH_DIR}"
-git clone git@github.com:sourcegraph/deploy-sourcegraph.git
+git clone "https://github.com/sourcegraph/deploy-sourcegraph.git"
 cd deploy-sourcegraph
 git checkout "$deploy_sourcegraph_commit"
 
 cd "$DIR"
 ds-to-dhall ds2dhall -i kustomization.yaml -x k8sTypesUnion.dhall -o deploy-sourcegraph.dhall -u "$DIR"/src/deps/k8s "$SCRATCH_DIR"/deploy-sourcegraph/base
+IMAGE_FILE="${DIR}/src/simple/images.dhall"
+ds-to-dhall dockerimg "$SCRATCH_DIR"/deploy-sourcegraph/base >"${IMAGE_FILE}"
+dhall format --inplace "${IMAGE_FILE}"

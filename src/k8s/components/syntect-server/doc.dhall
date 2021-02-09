@@ -92,5 +92,16 @@ let c
             }
           }
         ]
+      with   syntect-server
+           . Deployment
+           . Containers
+           . syntect-server
+           . additionalVolumeMounts
+           =
+        [ Sourcegraph.Kubernetes.VolumeMount::{
+          , name = "FAKE_MAYBE_NOT"
+          , mountPath = "/perhaps/not"
+          }
+        ]
 
 in  Sourcegraph.Generate c

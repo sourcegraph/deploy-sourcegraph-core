@@ -875,9 +875,9 @@ _The default values of `digest` and `tag` will vary depending on the release in 
 
 #### environment variables
 
-| Name           | Copy paste snippet                                                                                 | Default values                                          |
-| -------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `LOG_REQUESTS` | `with pgsql.Deployment.Containers.pgsql-exporter.environment.DATA_SOURCE_NAME.value = Some <Text>` | `Some "postgres://sg:@localhost:5432/?sslmode=disable"` |
+| Name               | Copy paste snippet                                                                                 | Default values                                          |
+| ------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `DATA_SOURCE_NAME` | `with pgsql.Deployment.Containers.pgsql-exporter.environment.DATA_SOURCE_NAME.value = Some <Text>` | `Some "postgres://sg:@localhost:5432/?sslmode=disable"` |
 
 #### resources
 

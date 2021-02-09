@@ -1,17 +1,10 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
-
 let Container = util.Container
 
-let image =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/syntax-highlighter"
-      , tag = "insiders"
-      , digest = Some
-          "83ff65809e6647b466bd400de4c438a32feeabe8e791b12e15c67c84529ad2de"
-      }
+let Simple/images = ../images.dhall
+
+let image = Simple/images.sourcegraph/syntax-highlighter
 
 let hostname = "syntect-server"
 
