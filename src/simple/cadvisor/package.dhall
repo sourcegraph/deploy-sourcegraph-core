@@ -1,17 +1,10 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
+let Simple/images = ../images.dhall
 
 let Container = util.Container
 
-let image =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/cadvisor"
-      , tag = "insiders"
-      , digest = Some
-          "da8fa91d4e06bdcd430ceb5e719f63339a5ff233471850bf16c7290cbb3630fd"
-      }
+let image = Simple/images.sourcegraph/cadvisor
 
 let httpPort = { number = 48080, name = Some "http" }
 

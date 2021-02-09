@@ -73,5 +73,5 @@ k8s-schemas-file := "./src/deps/k8s/schemas.dhall"
 render-config-defaults:
     ./scripts/dhall-render-configuration-defaults.sh
 
-rewrite-ds:
+rewrite-ds: sync-ds
     dhall rewrite-with-schemas --inplace '{{deploy-sourcegraph-file}}' --schemas '{{k8s-schemas-file}}'

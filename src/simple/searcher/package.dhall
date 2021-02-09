@@ -1,17 +1,10 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
-
 let Container = util.Container
 
-let image =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/searcher"
-      , tag = "insiders"
-      , digest = Some
-          "1270809512e5f61eb0867e82c08f0f98fa58b4d282ffbbdf23c5ace095132831"
-      }
+let Simple/images = ../images.dhall
+
+let image = Simple/images.sourcegraph/searcher
 
 let cacheDir = "/mnt/cache"
 

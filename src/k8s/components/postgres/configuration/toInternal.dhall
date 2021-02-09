@@ -267,7 +267,7 @@ let Containers/pgsql-exporter/toInternal
     = λ(cg : Configuration/Global.Type) →
         let c = cg.pgsql.Deployment.Containers.pgsql-exporter
 
-        let image = c.image
+        let image = Image/manipulate cg.Global.ImageManipulations c.image
 
         let resources = Configuration/ResourceRequirements/toK8s c.resources
 

@@ -1,17 +1,10 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
-
 let Container = util.Container
 
-let image =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/minio"
-      , tag = "insiders"
-      , digest = Some
-          "3d7a0147396ea799284ba707765d477797518425682c9aa65faa5883a63fac4f"
-      }
+let Simple/images = ../images.dhall
+
+let image = Simple/images.sourcegraph/minio
 
 let ports = { minio = { number = 9000, name = Some "minio" } }
 

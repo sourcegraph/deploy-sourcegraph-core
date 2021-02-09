@@ -1,35 +1,14 @@
 let util = ../../util/package.dhall
 
-let Image = util.Image
-
 let Container = util.Container
 
-let redisCacheImage =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/redis-cache"
-      , tag = "insiders"
-      , digest = Some
-          "7820219195ab3e8fdae5875cd690fed1b2a01fd1063bd94210c0e9d529c38e56"
-      }
+let Simple/images = ../images.dhall
 
-let redisExporterImage =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/redis_exporter"
-      , tag = "84464_2021-01-15_c2e4c28"
-      , digest = Some
-          "f3f51453e4261734f08579fe9c812c66ee443626690091401674be4fb724da70"
-      }
+let redisCacheImage = Simple/images.sourcegraph/redis-cache
 
-let redisStoreImage =
-      Image::{
-      , registry = Some "index.docker.io"
-      , name = "sourcegraph/redis-store"
-      , tag = "insiders"
-      , digest = Some
-          "e8467a8279832207559bdfbc4a89b68916ecd5b44ab5cf7620c995461c005168"
-      }
+let redisExporterImage = Simple/images.sourcegraph/redis_exporter
+
+let redisStoreImage = Simple/images.sourcegraph/redis-store
 
 let redisPort = { number = 6379, name = Some "redis" }
 

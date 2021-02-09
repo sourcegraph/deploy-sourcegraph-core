@@ -19,6 +19,8 @@ let Kubernetes/LabelSelector =
 
 let Image = util.Image
 
+let Simple/images = ../../../../simple/images.dhall
+
 let Configuration/ResourceRequirements =
       (../../../util/container-resources/package.dhall).Requirements
 
@@ -34,18 +36,15 @@ let initContainerResources
     : Configuration/ResourceRequirements.Type
     = Configuration/ResourceRequirements::{=}
 
+let alpineImge =
+      Simple/images.sourcegraph/alpine
+      with tag = "3.12"
+      with digest = Some
+          "133a0a767b836cf86a011101995641cf1b5cbefb3dd212d78d7be145adde636d"
+
 let InitContainer =
       { Type = ContainerConfiguration.Type
-      , default =
-        { image = util.Image::{
-          , name = "sourcegraph/alpine"
-          , tag = "3.12"
-          , digest = Some
-              "133a0a767b836cf86a011101995641cf1b5cbefb3dd212d78d7be145adde636d"
-          , registry = None Text
-          }
-        , resources = initContainerResources
-        }
+      , default = { image = alpineImge, resources = initContainerResources }
       }
 
 let pgsqlResources
@@ -82,13 +81,7 @@ let PostgresExporter =
       { Type = ContainerConfiguration.Type ⩓ { environment : exporterEnv.Type }
       , default =
         { environment = exporterEnv.default
-        , image = util.Image::{
-          , name = "sourcegraph/postgres_exporter"
-          , tag = "insiders"
-          , digest = Some
-              "ac8ef017099276edef5df78fba63d633e68bd881fa56882074f4710e09ebe1ed"
-          , registry = None Text
-          }
+        , image = Simple/images.sourcegraph/postgres_exporter
         , resources = postgresExporterResources
         }
       }
