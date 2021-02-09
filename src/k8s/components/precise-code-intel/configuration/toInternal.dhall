@@ -200,8 +200,8 @@ let Test/Service/Namespace/Some =
 let toInternal
     : ∀(cg : Configuration/global.Type) → Configuration/internal
     = λ(cg : Configuration/global.Type) →
-        { Deployment.precise-code-intel = Deployment/toInternal cg
-        , Service.precise-code-intel = Service/toInternal cg
+        { Deployment.precise-code-intel-worker = Deployment/toInternal cg
+        , Service.precise-code-intel-worker = Service/toInternal cg
         }
 
 in  toInternal

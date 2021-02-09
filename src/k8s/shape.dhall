@@ -26,6 +26,8 @@ let IndexedSearch/shape = ./components/indexed-search/shape.dhall
 
 let CodeIntel-db/shape = ./components/codeintel-db/shape.dhall
 
+let PreciseCodeIntel/shape = ./components/precise-code-intel/shape.dhall
+
 let Redis/shape = ./components/redis/shape.dhall
 
 in  { gitserver : Gitserver/shape
@@ -35,6 +37,7 @@ in  { gitserver : Gitserver/shape
     , query-runner : QueryRunner/shape
     , github-proxy : GithubProxy/shape
     , pgsql : Postgres/shape
+    , precise-code-intel : PreciseCodeIntel/shape
     , cadvisor : CAdvisor/shape
     , minio : Minio/shape
     , searcher : Searcher/shape

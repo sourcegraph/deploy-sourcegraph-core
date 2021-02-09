@@ -10,7 +10,7 @@ let image =
       , name = "sourcegraph/precise-code-intel-worker"
       , tag = "insiders"
       , digest = Some
-          "0bd03b9faec72499a595f08dcd65b28944eaeccdc1adc5d768edfba2a71f657b"
+          "fffa377c6576e6dba8a0b3160391a04999d103ca054fd8ef48558547badcbe5c"
       }
 
 let hostname = "precise-code-intel-worker"

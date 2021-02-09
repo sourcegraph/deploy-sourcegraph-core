@@ -38,6 +38,7 @@ let Containers/preciseCodeIntelWorker/generate
             = probe
               with initialDelaySeconds = Some 60
               with timeoutSeconds = Some 5
+              with periodSeconds = None Natural
 
         let readinessProbe
             : Kubernetes/Probe.Type
@@ -71,5 +72,37 @@ let Containers/preciseCodeIntelWorker/generate
             , terminationMessagePolicy = Some "FallbackToLogsOnError"
             , securityContext
             }
+
+let Fixtures/Container/precise-code-intel =
+      (./fixtures.dhall).precise-code-intel
+
+let Fixtures/global = ../../../../util/test-fixtures/package.dhall
+
+let tc = Fixtures/Container/precise-code-intel.Config
+
+let Test/image/show =
+        assert
+      :     (Containers/preciseCodeIntelWorker/generate tc).image
+        ===  Some Fixtures/global.Image.BaseShow
+
+let Test/environment/some =
+        assert
+      :     ( Containers/preciseCodeIntelWorker/generate
+                ( tc
+                  with envVars =
+                      Fixtures/Container/precise-code-intel.Environment.input
+                )
+            ).env
+        ===  Fixtures/Container/precise-code-intel.Environment.expected
+
+let Test/environment/none =
+        assert
+      :     ( Containers/preciseCodeIntelWorker/generate
+                ( tc
+                  with envVars =
+                      Fixtures/Container/precise-code-intel.Environment.noneInput
+                )
+            ).env
+        ===  Fixtures/Container/precise-code-intel.Environment.noneExpected
 
 in  Containers/preciseCodeIntelWorker/generate
