@@ -33,6 +33,9 @@ let Codeintel-db/configuration =
 let Syntect-server/configuration =
       ../components/syntect-server/configuration/user.dhall
 
+let PreciseCodeIntel/configuration =
+      ../components/precise-code-intel/configuration/user.dhall
+
 let IndexedSearch/configuration =
       ../components/indexed-search/configuration/user.dhall
 
@@ -57,6 +60,7 @@ let configuration =
           , query-runner : QueryRunner/configuration.Type
           , searcher : Searcher/configuration.Type
           , pgsql : Postgres/configuration.Type
+          , precise-code-intel : PreciseCodeIntel/configuration.Type
           , minio : Minio/configuration.Type
           , jaeger : Jaeger/configuration.Type
           , indexed-search : IndexedSearch/configuration.Type
@@ -82,6 +86,7 @@ let configuration =
         , query-runner = QueryRunner/configuration.default
         , searcher = Searcher/configuration.default
         , pgsql = Postgres/configuration.default
+        , precise-code-intel = PreciseCodeIntel/configuration.default
         , minio = Minio/configuration.default
         , jaeger = Jaeger/configuration.default
         , indexed-search = IndexedSearch/configuration.default

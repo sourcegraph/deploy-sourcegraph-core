@@ -26,6 +26,8 @@ let Codeintel-db/generate = ./components/codeintel-db/generate.dhall
 
 let Redis/generate = ./components/redis/generate.dhall
 
+let PreciseCodeIntel/generate = ./components/precise-code-intel/generate.dhall
+
 let Shape = ./shape.dhall
 
 let Jaeger/generate = ./components/jaeger/generate.dhall
@@ -43,6 +45,7 @@ let generate
         , grafana = Grafana/generate c
         , query-runner = QueryRunner/generate c
         , pgsql = Postgres/generate c
+        , precise-code-intel = PreciseCodeIntel/generate c
         , cadvisor = CAdvisor/generate c
         , minio = Minio/generate c
         , searcher = Searcher/generate c
