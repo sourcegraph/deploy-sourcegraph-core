@@ -18,7 +18,7 @@ trap cleanup EXIT
 deploy_sourcegraph_commit=${SYNC_DEPLOY_SOURCEGRAPH_COMMIT:-master}
 
 cd "${SCRATCH_DIR}"
-git clone git@github.com:sourcegraph/deploy-sourcegraph.git
+git clone "https://github.com/sourcegraph/deploy-sourcegraph.git"
 cd deploy-sourcegraph
 git checkout "$deploy_sourcegraph_commit"
 
