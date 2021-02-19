@@ -45,7 +45,7 @@ let ServiceAccount/generate
 
         in  serviceAccount
 
-let tc = Fixtures/frontend/serviceAccount.frontend.Config
+let tc = Fixtures/frontend/serviceAccount.frontend.Config.serviceAccount
 
 let Test/namespace/none =
         assert
