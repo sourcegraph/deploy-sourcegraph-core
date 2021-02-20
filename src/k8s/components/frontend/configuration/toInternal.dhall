@@ -18,6 +18,15 @@ let Configuration/internal/service/sourcegraph-frontend =
 let Configuration/internal/service/sourcegraph-frontend-internal =
       ./internal/service/sourcegraph-frontend-internal.dhall
 
+let Configuration/Internal/ServiceAccount =
+      ./internal/rbac/service-account.dhall
+
+let Configuration/Internal/Role = ./internal/rbac/role.dhall
+
+let Configuration/Internal/RoleBinding = ./internal/rbac/role-binding.dhall
+
+let Configuration/Internal/Ingress = ./internal/ingress.dhall
+
 let Configuration/internal/Volumes = ./volumes/volumes.dhall
 
 let Configuration/internal/jaeger =
@@ -336,6 +345,22 @@ let Test/Service/sourcegraph-frontend-internal/Namespace/Some =
           ).namespace
         ≡ Some Fixtures.Namespace
 
+let Role/toInternal
+    : ∀(cg : Configuration/global.Type) → Configuration/Internal/Role
+    = λ(cg : Configuration/global.Type) → { namespace = cg.Global.namespace }
+
+let RoleBinding/toInternal
+    : ∀(cg : Configuration/global.Type) → Configuration/Internal/RoleBinding
+    = λ(cg : Configuration/global.Type) → { namespace = cg.Global.namespace }
+
+let ServiceAccount/toInternal
+    : ∀(cg : Configuration/global.Type) → Configuration/Internal/ServiceAccount
+    = λ(cg : Configuration/global.Type) → { namespace = cg.Global.namespace }
+
+let Ingress/toInternal
+    : ∀(cg : Configuration/global.Type) → Configuration/Internal/Ingress
+    = λ(cg : Configuration/global.Type) → { namespace = cg.Global.namespace }
+
 let toInternal
     : ∀(cg : Configuration/global.Type) → Configuration/internal
     = λ(cg : Configuration/global.Type) →
@@ -345,6 +370,10 @@ let toInternal
           , sourcegraph-frontend-internal =
               Service/sourcegraph-frontend-internal/toInternal cg
           }
+        , Role = Role/toInternal cg
+        , RoleBinding = RoleBinding/toInternal cg
+        , ServiceAccount = ServiceAccount/toInternal cg
+        , Ingress = Ingress/toInternal cg
         }
 
 in  toInternal
