@@ -1,9 +1,7 @@
-let Configuration/Internal/Ingress =
-      ../../configuration/internal/ingress.dhall
+let Configuration/Internal/Ingress = ../../configuration/internal/ingress.dhall
 
 let TestConfig
     : Configuration/Internal/Ingress
-    = {namespace = None Text}
+    = { namespace = None Text }
 
-in  { frontend.Config =TestConfig
-    }
+in  { frontend.Config = TestConfig }

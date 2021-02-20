@@ -4,8 +4,7 @@ let Configuration/Internal/ServiceAccount =
 let Configuration/Internal/RoleBinding =
       ../../configuration/internal/rbac/role-binding.dhall
 
-let Configuration/Internal/Role =
-      ../../configuration/internal/rbac/role.dhall
+let Configuration/Internal/Role = ../../configuration/internal/rbac/role.dhall
 
 let TestConfigServiceAccount
     : Configuration/Internal/ServiceAccount

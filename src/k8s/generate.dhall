@@ -26,6 +26,8 @@ let Codeintel-db/generate = ./components/codeintel-db/generate.dhall
 
 let Redis/generate = ./components/redis/generate.dhall
 
+let Frontend/generate = ./components/frontend/generate.dhall
+
 let Shape = ./shape.dhall
 
 let Jaeger/generate = ./components/jaeger/generate.dhall
@@ -50,6 +52,7 @@ let generate
         , indexed-search = IndexedSearch/generate c
         , redis = Redis/generate c
         , codeintel-db = Codeintel-db/generate c
+        , frontend = Frontend/generate c
         }
 
 in  generate

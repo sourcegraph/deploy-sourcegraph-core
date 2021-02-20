@@ -19,6 +19,8 @@ let IndexedSearch/generate-list =
 
 let Redis/generate-list = ./components/redis/generate-list.dhall
 
+let Frontend/generate-list = ./components/frontend/generate-list.dhall
+
 let Kubernetes/Union = ./union.dhall
 
 let Configuration/global = ./configuration/global.dhall
@@ -45,6 +47,8 @@ let generate-list
         let xs = xs # IndexedSearch/generate-list c
 
         let xs = xs # Redis/generate-list c
+
+        let xs = xs # Frontend/generate-list c
 
         in  xs
 
