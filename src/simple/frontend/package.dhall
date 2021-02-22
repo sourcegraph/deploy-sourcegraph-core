@@ -38,7 +38,7 @@ let frontendContainer =
         , hostname = frontendHostname
         , environment = frontendEnvironment
         , volumes
-        , ports.http = 3080
+        , ports.http = httpPort
         }
 
 let internalHostname = "sourcegraph-frontend-internal"

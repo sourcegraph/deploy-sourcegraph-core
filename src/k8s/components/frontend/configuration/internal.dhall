@@ -1,23 +1,33 @@
-let Kubernetes/SecurityContext =
-      ../../../../deps/k8s/schemas/io.k8s.api.core.v1.SecurityContext.dhall
+let Configuration/Internal/Service/sourcegraph-frontend =
+      ./internal/service/sourcegraph-frontend.dhall
 
-let sharedConfiguration = ../../shared/shared.dhall
+let Configuration/Internal/Service/sourcegraph-frontend-internal =
+      ./internal/service/sourcegraph-frontend-internal.dhall
 
-let environment = ./environment/environment.dhall
+let Configuration/Internal/Deployment = ./internal/deployment.dhall
 
-let ContainerConfiguration =
-        { securityContext : Optional Kubernetes/SecurityContext.Type }
-      ⩓ sharedConfiguration.ContainerConfiguration.Type
+let Configuration/Internal/ServiceAccount =
+      ./internal/rbac/service-account.dhall
 
-let FrontendContainer =
-      ContainerConfiguration ⩓ { Environment : environment.Type }
+let Configuration/Internal/Role = ./internal/rbac/role.dhall
 
-let JaegerContainer = ContainerConfiguration
+let Configuration/Internal/RoleBinding = ./internal/rbac/role-binding.dhall
 
-let Containers = { frontend : FrontendContainer, jaeger : JaegerContainer }
+let Configuration/Internal/Ingress = ./internal/ingress.dhall
 
-let Deployment = { Containers : Containers }
-
-let configuration = { namespace : Optional Text, Deployment : Deployment }
+let configuration =
+      { Deployment :
+          { sourcegraph-frontend : Configuration/Internal/Deployment }
+      , Service :
+          { sourcegraph-frontend :
+              Configuration/Internal/Service/sourcegraph-frontend
+          , sourcegraph-frontend-internal :
+              Configuration/Internal/Service/sourcegraph-frontend-internal
+          }
+      , Role : Configuration/Internal/Role
+      , RoleBinding : Configuration/Internal/RoleBinding
+      , ServiceAccount : Configuration/Internal/ServiceAccount
+      , Ingress : Configuration/Internal/Ingress
+      }
 
 in  configuration

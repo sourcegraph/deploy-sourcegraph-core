@@ -34,6 +34,38 @@ let postgresEnv =
         }
       }
 
+let codeIntelPostgresEnv =
+      { Type =
+          { CODEINTEL_PGDATABASE : Kubernetes/EnvVar.Type
+          , CODEINTEL_PGHOST : Kubernetes/EnvVar.Type
+          , CODEINTEL_PGPORT : Kubernetes/EnvVar.Type
+          , CODEINTEL_PGSSLMODE : Kubernetes/EnvVar.Type
+          , CODEINTEL_PGUSER : Kubernetes/EnvVar.Type
+          }
+      , default =
+        { CODEINTEL_PGDATABASE = Kubernetes/EnvVar::{
+          , name = "CODEINTEL_PGDATABASE"
+          , value = Some "sg"
+          }
+        , CODEINTEL_PGHOST = Kubernetes/EnvVar::{
+          , name = "CODEINTEL_PGHOST"
+          , value = Some "codeintel-db"
+          }
+        , CODEINTEL_PGPORT = Kubernetes/EnvVar::{
+          , name = "CODEINTEL_PGPORT"
+          , value = Some "5432"
+          }
+        , CODEINTEL_PGSSLMODE = Kubernetes/EnvVar::{
+          , name = "CODEINTEL_PGSSLMODE"
+          , value = Some "disable"
+          }
+        , CODEINTEL_PGUSER = Kubernetes/EnvVar::{
+          , name = "CODEINTEL_PGUSER"
+          , value = Some "sg"
+          }
+        }
+      }
+
 let environment =
       { Type =
             { SRC_GIT_SERVERS : Kubernetes/EnvVar.Type
@@ -41,10 +73,10 @@ let environment =
             , CACHE_DIR : Kubernetes/EnvVar.Type
             , GRAFANA_SERVER_URL : Kubernetes/EnvVar.Type
             , JAEGER_SERVER_URL : Kubernetes/EnvVar.Type
-            , PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL : Kubernetes/EnvVar.Type
             , PROMETHEUS_URL : Kubernetes/EnvVar.Type
             }
           ⩓ postgresEnv.Type
+          ⩓ codeIntelPostgresEnv.Type
       , default =
             { SRC_GIT_SERVERS = Kubernetes/EnvVar::{
               , name = "SRC_GIT_SERVERS"
@@ -71,16 +103,13 @@ let environment =
               , name = "JAEGER_SERVER_URL"
               , value = Some "http://jaeger-query:16686"
               }
-            , PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL = Kubernetes/EnvVar::{
-              , name = "PRECISE_CODE_INTEL_BUNDLE_MANAGER_URL"
-              , value = Some "http://precise-code-intel-bundle-manager:3187"
-              }
             , PROMETHEUS_URL = Kubernetes/EnvVar::{
               , name = "PROMETHEUS_URL"
               , value = Some "http://prometheus:30090"
               }
             }
           ∧ postgresEnv.default
+          ∧ codeIntelPostgresEnv.default
       }
 
 in  environment
