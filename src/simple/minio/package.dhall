@@ -22,10 +22,10 @@ let healthCheck =
 let volumes = { minio-data = "/data" }
 
 let environment =
-      { MINIO_ACCESS_KEY =
-        { name = "MINIO_ACCESS_KEY", value = "AKIAIOSFODNN7EXAMPLE" }
-      , MINIO_SECRET_KEY =
-        { name = "MINIO_SECRET_KEY"
+      { MINIO_ROOT_USER =
+        { name = "MINIO_ROOT_USER", value = "AKIAIOSFODNN7EXAMPLE" }
+      , MINIO_ROOT_PASSWORD =
+        { name = "MINIO_ROOT_PASSWORD"
         , value = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
         }
       }
