@@ -6,17 +6,17 @@ let Simple/Minio/Environment =
 
 let environment =
       { Type =
-          { MINIO_ACCESS_KEY : Kubernetes/EnvVar.Type
-          , MINIO_SECRET_KEY : Kubernetes/EnvVar.Type
+          { MINIO_ROOT_USER : Kubernetes/EnvVar.Type
+          , MINIO_ROOT_PASSWORD : Kubernetes/EnvVar.Type
           }
       , default =
-        { MINIO_ACCESS_KEY = Kubernetes/EnvVar::{
-          , name = Simple/Minio/Environment.MINIO_ACCESS_KEY.name
-          , value = Some "${Simple/Minio/Environment.MINIO_ACCESS_KEY.value}"
+        { MINIO_ROOT_USER = Kubernetes/EnvVar::{
+          , name = Simple/Minio/Environment.MINIO_ROOT_USER.name
+          , value = Some "${Simple/Minio/Environment.MINIO_ROOT_USER.value}"
           }
-        , MINIO_SECRET_KEY = Kubernetes/EnvVar::{
-          , name = Simple/Minio/Environment.MINIO_SECRET_KEY.name
-          , value = Some "${Simple/Minio/Environment.MINIO_SECRET_KEY.value}"
+        , MINIO_ROOT_PASSWORD = Kubernetes/EnvVar::{
+          , name = Simple/Minio/Environment.MINIO_ROOT_PASSWORD.name
+          , value = Some "${Simple/Minio/Environment.MINIO_ROOT_PASSWORD.value}"
           }
         }
       }

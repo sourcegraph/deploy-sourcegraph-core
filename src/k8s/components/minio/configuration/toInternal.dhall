@@ -118,7 +118,7 @@ let fixtures =
              . Containers
              . minio
              . environment
-             . MINIO_ACCESS_KEY
+             . MINIO_ROOT_USER
              . value
              = Some
             "FOO"
@@ -127,7 +127,7 @@ let fixtures =
              . Containers
              . minio
              . environment
-             . MINIO_SECRET_KEY
+             . MINIO_ROOT_PASSWORD
              . value
              = Some
             "BAR"
@@ -226,11 +226,11 @@ let Test/Deployment/Containers/minio/environment =
           :   outputs.userSettings.Deployment.containers.minio.envVars
             ≡ Some
                 [ Kubernetes/EnvVar::{
-                  , name = "MINIO_ACCESS_KEY"
+                  , name = "MINIO_ROOT_USER"
                   , value = Some "FOO"
                   }
                 , Kubernetes/EnvVar::{
-                  , name = "MINIO_SECRET_KEY"
+                  , name = "MINIO_ROOT_PASSWORD"
                   , value = Some "BAR"
                   }
                 ]
